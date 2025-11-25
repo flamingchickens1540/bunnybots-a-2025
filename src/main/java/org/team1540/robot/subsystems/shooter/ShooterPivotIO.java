@@ -7,7 +7,6 @@ public interface ShooterPivotIO {
     @AutoLog
     class ShooterPivotIOInputs {
         public Rotation2d position = new Rotation2d();
-        public Rotation2d absolutePosition = new Rotation2d();
         public double velocityRPS = 0.0;
         public double appliedVolts = 0.0;
         public double currentAmps = 0.0;
