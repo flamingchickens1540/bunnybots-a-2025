@@ -115,13 +115,14 @@ public class FlywheelsIOReal implements FlywheelsIO {
 
     // function for PID tunning
     @Override
-    public void configPID(double kP, double kI, double kD, double kV) {
+    public void configPID(double kP, double kI, double kD, double kV, double kS) {
         Slot0Configs pidConfigs = new Slot0Configs();
         leftMotor.getConfigurator().refresh(pidConfigs);
         pidConfigs.kP = kP;
         pidConfigs.kI = kI;
         pidConfigs.kD = kD;
         pidConfigs.kV = kV;
+        pidConfigs.kS = kS;
         leftMotor.getConfigurator().apply(pidConfigs);
         rightMotor.getConfigurator().apply(pidConfigs);
     }

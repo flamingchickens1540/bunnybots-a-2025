@@ -35,5 +35,5 @@ public interface FlywheelsIO {
     /**
      * Configures the PID controller
      */
-    default void configPID(double kP, double kI, double kD, double kV) {}
+    default void configPID(double kP, double kI, double kD, double kV, double kS) {}
 }
