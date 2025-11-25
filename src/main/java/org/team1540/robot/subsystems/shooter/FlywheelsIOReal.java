@@ -1,5 +1,7 @@
 package org.team1540.robot.subsystems.shooter;
 
+import static org.team1540.robot.subsystems.shooter.ShooterConstants.Flywheels.*;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -7,21 +9,15 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
-
-// Import constants
-import static org.team1540.robot.subsystems.shooter.ShooterConstants.Flywheels.*;
-
 import org.team1540.robot.subsystems.shooter.FlywheelsIO.FlywheelsIOInputs;
 
-public class FlywheelsIOReal implements FlywheelsIO{
+public class FlywheelsIOReal implements FlywheelsIO {
 
     private final TalonFX leftMotor = new TalonFX(LEFT_ID);
     private final TalonFX rightMotor = new TalonFX(RIGHT_ID);
@@ -36,19 +32,21 @@ public class FlywheelsIOReal implements FlywheelsIO{
     private final StatusSignal<Current> rightCurrent = rightMotor.getSupplyCurrent();
     private final StatusSignal<Temperature> rightTempCelsius = rightMotor.getDeviceTemp();
 
-    private final VelocityVoltage leftVelocityCtrlReq = new VelocityVoltage(0).withEnableFOC(true).withSlot(0);
+    private final VelocityVoltage leftVelocityCtrlReq =
+            new VelocityVoltage(0).withEnableFOC(true).withSlot(0);
     private final VoltageOut leftVoltageCtrlReq = new VoltageOut(0).withEnableFOC(true);
 
-    private final VelocityVoltage rightVelocityCtrlReq = new VelocityVoltage(0).withEnableFOC(true).withSlot(0);
+    private final VelocityVoltage rightVelocityCtrlReq =
+            new VelocityVoltage(0).withEnableFOC(true).withSlot(0);
     private final VoltageOut rightVoltageCtrlReq = new VoltageOut(0).withEnableFOC(true);
 
     // Config ):
     public FlywheelsIOReal() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        
+
         // TODO: finsh config with voltage limits and feedback values
 
-        // Set PID and feed forward values 
+        // Set PID and feed forward values
         config.Slot0.kP = KP;
         config.Slot0.kI = KI;
         config.Slot0.kD = KD;
@@ -79,7 +77,6 @@ public class FlywheelsIOReal implements FlywheelsIO{
 
         leftMotor.optimizeBusUtilization();
         rightMotor.optimizeBusUtilization();
-
     }
 
     @Override
@@ -116,7 +113,8 @@ public class FlywheelsIOReal implements FlywheelsIO{
         leftMotor.setControl(leftVoltageCtrlReq.withOutput(leftVolts));
         rightMotor.setControl(rightVoltageCtrlReq.withOutput(rightVolts));
     }
-    
+
+    // function for PID tunning
     @Override
     public void configPID(double kP, double kI, double kD, double kV) {
         Slot0Configs pidConfigs = new Slot0Configs();
@@ -127,6 +125,5 @@ public class FlywheelsIOReal implements FlywheelsIO{
         pidConfigs.kV = kV;
         leftMotor.getConfigurator().apply(pidConfigs);
         rightMotor.getConfigurator().apply(pidConfigs);
-
     }
 }
