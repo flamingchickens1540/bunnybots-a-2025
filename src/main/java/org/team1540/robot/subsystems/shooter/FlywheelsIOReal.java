@@ -15,7 +15,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
-import org.team1540.robot.subsystems.shooter.FlywheelsIO.FlywheelsIOInputs;
 
 public class FlywheelsIOReal implements FlywheelsIO {
 

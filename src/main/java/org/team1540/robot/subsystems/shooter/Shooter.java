@@ -17,8 +17,13 @@ public class Shooter extends SubsystemBase {
     private final FlywheelsIO flywheelsIO;
     private final FlywheelsIOInputsAutoLogged flywheelInputs = new FlywheelsIOInputsAutoLogged();
 
+    private final FeederIO feederIO;
+    private final FeederIOInputsAutoLogged feederInputs = new FeederIOInputsAutoLogged();
+
     private double leftFlywheelSetpointRPM;
     private double rightFlywheelSetpointRPM;
+
+    private double feederSetpointRPM;
 
     private static boolean hasInstance = false;
 
@@ -27,7 +32,7 @@ public class Shooter extends SubsystemBase {
      * Function: Periodic - DONE
      * Function: Create real [Leave until end]
      *
-     *
+     * for feeder:
      * Function: set speed - DONE
      * Function: set volts - DONE
      * Function: stop flywheels - DONE
@@ -42,16 +47,25 @@ public class Shooter extends SubsystemBase {
      * Function: stop pivot
      * Function: is pivot at set point?
      *
+     * for feeder:
+     * Function: set speed - DONE
+     * Function: set volts - DONE
+     * Function: stop feeder - DONE
+     * Fuunction: get speed - DONE
+     *
      * Spin up command - DONE
      * Set pivot pos command
      * Spin up and set pivot pos command
+     *
+     * FEEDER COMMANDS [TBD]
      */
 
-    private Shooter(ShooterPivotIO pivotIO, FlywheelsIO flywheelsIO) {
+    private Shooter(ShooterPivotIO pivotIO, FlywheelsIO flywheelsIO, FeederIO feederIO) {
         if (hasInstance) throw new IllegalStateException("Instance of shooter already exists");
         hasInstance = true;
         this.pivotIO = pivotIO;
         this.flywheelsIO = flywheelsIO;
+        this.feederIO = feederIO;
     }
 
     @Override
@@ -99,6 +113,24 @@ public class Shooter extends SubsystemBase {
 
     public void stopPivot() {}
 
+    // Feeder functions
+    public void setFeederSpeed(double speedRPM) {
+        feederSetpointRPM = speedRPM;
+        feederIO.setSpeed(speedRPM);
+    }
+
+    public void setFeederVolts(double volts) {
+        feederIO.setVoltage(MathUtil.clamp(volts, -12, 12));
+    }
+
+    public void stopFeeder() {
+        setFeederVolts(0);
+    }
+
+    public double getFeederSpeed() {
+        return feederInputs.feederVelocityRPM;
+    }
+
     /*  Command factories
     public Command spinUpCommand() {}
     public Command setPivotPositionCommand() {}
@@ -131,5 +163,10 @@ public class Shooter extends SubsystemBase {
     @AutoLogOutput(key = "Shooter/Flywheels/rightSetpointRPM")
     public double getRightFlywheelSetpointRPM() {
         return rightFlywheelSetpointRPM;
+    }
+
+    @AutoLogOutput(key = "Shooter/Feeder/feederSetpointRPM")
+    public double getFeederSetpointRPM() {
+        return feederSetpointRPM;
     }
 }

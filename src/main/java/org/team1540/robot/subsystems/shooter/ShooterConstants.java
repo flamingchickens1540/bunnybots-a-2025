@@ -14,4 +14,8 @@ public class ShooterConstants {
     }
 
     public static class Pivot {}
+
+    public static class Feeder {
+        public static final int FEEDER_ID = 67;
+    }
 }
