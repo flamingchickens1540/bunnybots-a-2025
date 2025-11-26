@@ -1,11 +1,22 @@
 package org.team1540.robot.subsystems.intake;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+
 public class IntakeConstants {
-//placeholder values for now
+    // placeholder values for now
 
     public static final int ROLLER_MOTOR_ID = 0;
     public static final int PIVOT_MOTOR_ID = 0;
     public static final int PIVOT_CRUISE_VELOCITY_RPS = 0;
     public static final int PIVOT_ACCELERATION_RPS2 = 0;
-    public static final int PIVOT_MAX_ANGLE = 0;
+
+    public static final Rotation2d PIVOT_MIN_ANGLE = Rotation2d.fromDegrees(0);
+    public static final Rotation2d PIVOT_MAX_ANGLE = Rotation2d.fromDegrees(0);
+
+    public static final double PIVOT_KP = 0;
+    public static final double PIVOT_KI = 0;
+    public static final double PIVOT_KD = 0;
+    public static final double PIVOT_KS = 0;
+    public static final double PIVOT_KV = 0;
+    public static final double PIVOT_KG = 0;
 }
