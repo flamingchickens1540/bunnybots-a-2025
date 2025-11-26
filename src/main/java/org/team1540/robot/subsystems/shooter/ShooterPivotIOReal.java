@@ -1,20 +1,17 @@
 package org.team1540.robot.subsystems.shooter;
 
+import static org.team1540.robot.subsystems.shooter.ShooterConstants.Pivot.*;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.*;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.*;
-import org.dyn4j.geometry.Rotatable;
-
-import static org.team1540.robot.subsystems.shooter.ShooterConstants.Pivot.*;
 
 public class ShooterPivotIOReal implements ShooterPivotIO {
 
@@ -32,18 +29,17 @@ public class ShooterPivotIOReal implements ShooterPivotIO {
     private final MotionMagicVoltage positionCtrlRequest = new MotionMagicVoltage(0).withSlot(0);
     private final VoltageOut voltageCtrlRequest = new VoltageOut(0);
 
-    public ShooterPivotIOReal(){
-        TalonFXConfiguration motorConfig=new TalonFXConfiguration();
-        //todo : see if its inverted
+    public ShooterPivotIOReal() {
+        TalonFXConfiguration motorConfig = new TalonFXConfiguration();
+        // todo : see if its inverted
         motorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
         motorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-        //todo: see if its inverted
-
+        // todo: see if its inverted
 
         motorConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-        motorConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = MAX_ANGLE;
+        motorConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = MAX_ANGLE_ROTS;
         motorConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-        motorConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = MIN_ANGLE;
+        motorConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = MIN_ANGLE_ROTS;
 
         motorConfig.Slot0.kP = KP;
         motorConfig.Slot0.kI = KI;
@@ -63,47 +59,42 @@ public class ShooterPivotIOReal implements ShooterPivotIO {
         motorConfig.CurrentLimits.SupplyCurrentLowerLimit = SUPPLY_CURRENT_LOWER_LIMIT;
 
         BaseStatusSignal.setUpdateFrequencyForAll(
-                50,
-                position,
-                velocity,
-                suppliedCurrent,
-                appliedVoltage,
-                temp,
-                forwardLimit,
-                reverseLimit);
+                50, position, velocity, suppliedCurrent, appliedVoltage, temp, forwardLimit, reverseLimit);
 
         motor.optimizeBusUtilization();
     }
+
     @Override
-    public void updateInputs(ShooterPivotIOInputs inputs){
-        BaseStatusSignal.refreshAll(position, velocity,suppliedCurrent,appliedVoltage,temp,forwardLimit,reverseLimit);
+    public void updateInputs(ShooterPivotIOInputs inputs) {
+        BaseStatusSignal.refreshAll(
+                position, velocity, suppliedCurrent, appliedVoltage, temp, forwardLimit, reverseLimit);
         inputs.isAtForwardLimit = forwardLimit.getValue() == ForwardLimitValue.ClosedToGround;
         inputs.isAtReverseLimit = reverseLimit.getValue() == ReverseLimitValue.ClosedToGround;
         inputs.position = (edu.wpi.first.math.geometry.Rotation2d) position.getValue();
         inputs.velocityRPS = velocity.getValueAsDouble();
-        inputs.appliedVolts= appliedVoltage.getValueAsDouble();
+        inputs.appliedVolts = appliedVoltage.getValueAsDouble();
         inputs.currentAmps = suppliedCurrent.getValueAsDouble();
         inputs.tempCelsius = temp.getValueAsDouble();
     }
 
     @Override
-    public void setPosition(Rotation2d position){
+    public void setPosition(Rotation2d position) {
         motor.setControl(positionCtrlRequest.withPosition(position.getRotations()));
     }
 
     @Override
-    public void setVoltage(double volts){
+    public void setVoltage(double volts) {
         motor.setControl(voltageCtrlRequest.withOutput(volts));
     }
 
     @Override
-    public void setBrakeMode(boolean isBrakeMode){
+    public void setBrakeMode(boolean isBrakeMode) {
         motor.setNeutralMode(NeutralModeValue.Brake);
     }
 
     @Override
-    public void configPID(double kP, double kI, double kD, double kG){
-        Slot0Configs pidConfigs=new Slot0Configs();
+    public void configPID(double kP, double kI, double kD, double kG) {
+        Slot0Configs pidConfigs = new Slot0Configs();
         motor.getConfigurator().refresh(pidConfigs);
         pidConfigs.kP = kP;
         pidConfigs.kI = kI;
@@ -113,8 +104,7 @@ public class ShooterPivotIOReal implements ShooterPivotIO {
     }
 
     @Override
-    public void setEncoderPosition(double rotations){
+    public void setEncoderPosition(double rotations) {
         motor.setPosition(rotations);
     }
-
 }
