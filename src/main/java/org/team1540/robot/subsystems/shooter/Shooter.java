@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -235,21 +237,30 @@ public class Shooter extends SubsystemBase {
 
     }
 
-    public Command spinUpCommand(Supplier<Double> leftSetpoint, Supplier<Double> rightSetpoint) {
+    public Command spinUpCommand(DoubleSupplier leftSetpoint, DoubleSupplier rightSetpoint) {
         return new FunctionalCommand(
                 () -> {},
-                () -> setFlywheelSpeeds(leftSetpoint.get(), rightSetpoint.get()),
+                () -> setFlywheelSpeeds(leftSetpoint.getAsDouble(), rightSetpoint.getAsDouble()),
                 (ignored) -> {},
                 this::areFlywheelsSpunUp,
                 this);
     }
 
-    public Command spinUpAndSetPivotPosition(Supplier<Double> leftSetpoint, Supplier<Double> rightSetpoint, Supplier<Rotation2d> setpoint){
+    public Command spinFeederCommnad(DoubleSupplier setpoint) {
+        return new FunctionalCommand(
+            () -> {}, 
+            () -> setFeederSpeed(setpoint.getAsDouble()), 
+            (ignored) -> {}, 
+            () -> false, 
+            this);
+    }
+
+    public Command spinUpAndSetPivotPosition(DoubleSupplier leftSetpoint, DoubleSupplier rightSetpoint, Supplier<Rotation2d> setpoint){
         return new FunctionalCommand(
                 () -> {},
                 () -> {
                     setPivotPosition(setpoint.get());
-                    setFlywheelSpeeds(leftSetpoint.get(), rightSetpoint.get());
+                    setFlywheelSpeeds(leftSetpoint.getAsDouble(), rightSetpoint.getAsDouble());
                 },
                 (ignored) -> {},
                 () -> areFlywheelsSpunUp() && isPivotAtSetpoint(),
