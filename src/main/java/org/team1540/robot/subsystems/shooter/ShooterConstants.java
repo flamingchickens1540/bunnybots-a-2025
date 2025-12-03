@@ -22,7 +22,6 @@ public class ShooterConstants {
         public static final double KV = 67;
         public static final double KG = 67;
 
-
         public static final double MAX_ANGLE_ROTS = 67;
         public static final double MIN_ANGLE_ROTS = 67;
         public static final double CRUISE_VELOCITY_RPS = 67;
@@ -32,7 +31,7 @@ public class ShooterConstants {
         public static final double SUPPLY_CURRENT_LIMIT = 10;
         public static final double SUPPLY_CURRENT_LOWER_TIME = 0.1;
         public static final double SUPPLY_CURRENT_LOWER_LIMIT = 15;
-        public static final double ERROR_TOLERANCE_ROTS= 67;
+        public static final double ERROR_TOLERANCE_ROTS = 67;
     }
 
     public static class Feeder {

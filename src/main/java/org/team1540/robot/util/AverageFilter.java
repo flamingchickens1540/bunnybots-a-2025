@@ -1,4 +1,5 @@
 package org.team1540.robot.util;
+
 import java.util.LinkedList;
 
 // hopefully we won't have skill issues with this class anymore (2023orwil moment)

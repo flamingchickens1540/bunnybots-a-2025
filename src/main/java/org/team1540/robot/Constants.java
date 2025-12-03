@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.DriverStation;
  */
 public final class Constants {
     private static final boolean tuningMode = true; // TODO: DO NOT SET TO TRUE FOR COMP
+
     public static boolean isTuningMode() {
         return tuningMode && !DriverStation.isFMSAttached();
     }

@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -30,7 +29,6 @@ public class Shooter extends SubsystemBase {
     private final AverageFilter rightSpeedFilter = new AverageFilter(20); // Units: RPM
     private final AverageFilter pivotPositionFilter = new AverageFilter(10); // Units: rotations
 
-
     private double leftFlywheelSetpointRPM;
     private double rightFlywheelSetpointRPM;
 
@@ -43,17 +41,20 @@ public class Shooter extends SubsystemBase {
     private final LoggedTunableNumber pivotKD = new LoggedTunableNumber("Shooter/Pivot/kD", ShooterConstants.Pivot.KD);
     private final LoggedTunableNumber pivotKG = new LoggedTunableNumber("Shooter/Pivot/kG", ShooterConstants.Pivot.KG);
 
+    private final LoggedTunableNumber flywheelsKP =
+            new LoggedTunableNumber("Shooter/Flywheels/kP", ShooterConstants.Flywheels.KP);
+    private final LoggedTunableNumber flywheelsKI =
+            new LoggedTunableNumber("Shooter/Flywheels/kI", ShooterConstants.Flywheels.KI);
+    private final LoggedTunableNumber flywheelsKD =
+            new LoggedTunableNumber("Shooter/Flywheels/kD", ShooterConstants.Flywheels.KD);
+    private final LoggedTunableNumber flywheelsKV =
+            new LoggedTunableNumber("Shooter/Flywheels/kV", ShooterConstants.Flywheels.KV);
+    private final LoggedTunableNumber flywheelsKS =
+            new LoggedTunableNumber("Shooter/Flywheels/kS", ShooterConstants.Flywheels.KS);
 
-    private final LoggedTunableNumber flywheelsKP = new LoggedTunableNumber("Shooter/Flywheels/kP", ShooterConstants.Flywheels.KP);
-    private final LoggedTunableNumber flywheelsKI = new LoggedTunableNumber("Shooter/Flywheels/kI", ShooterConstants.Flywheels.KI);
-    private final LoggedTunableNumber flywheelsKD = new LoggedTunableNumber("Shooter/Flywheels/kD", ShooterConstants.Flywheels.KD);
-    private final LoggedTunableNumber flywheelsKV = new LoggedTunableNumber("Shooter/Flywheels/kV", ShooterConstants.Flywheels.KV);
-    private final LoggedTunableNumber flywheelsKS = new LoggedTunableNumber("Shooter/Flywheels/kS", ShooterConstants.Flywheels.KS);
+    private final Rotation2d angleOffSet = new Rotation2d();
 
-
-    private final Rotation2d angleOffSet= new Rotation2d();
-
-            // todo shooter lerp
+    // todo shooter lerp
     private static boolean hasInstance = false;
 
     /*
@@ -89,8 +90,6 @@ public class Shooter extends SubsystemBase {
      * FEEDER COMMANDS [TBD]
      */
 
-
-
     private Shooter(ShooterPivotIO pivotIO, FlywheelsIO flywheelsIO, FeederIO feederIO) {
         if (hasInstance) throw new IllegalStateException("Instance of shooter already exists");
         hasInstance = true;
@@ -111,10 +110,19 @@ public class Shooter extends SubsystemBase {
             stopPivot();
         }
         // Update tunable numbers
-        if (Constants.isTuningMode() && (flywheelsKP.hasChanged(hashCode()) || flywheelsKI.hasChanged(hashCode()) || flywheelsKD.hasChanged(hashCode()) || flywheelsKV.hasChanged(hashCode()))) {
-            flywheelsIO.configPID(flywheelsKP.get(), flywheelsKI.get(), flywheelsKD.get(), flywheelsKV.get(), flywheelsKS.get());
+        if (Constants.isTuningMode()
+                && (flywheelsKP.hasChanged(hashCode())
+                        || flywheelsKI.hasChanged(hashCode())
+                        || flywheelsKD.hasChanged(hashCode())
+                        || flywheelsKV.hasChanged(hashCode()))) {
+            flywheelsIO.configPID(
+                    flywheelsKP.get(), flywheelsKI.get(), flywheelsKD.get(), flywheelsKV.get(), flywheelsKS.get());
         }
-        if (Constants.isTuningMode() && (pivotKP.hasChanged(hashCode()) || pivotKI.hasChanged(hashCode()) || pivotKD.hasChanged(hashCode()) || pivotKG.hasChanged(hashCode()))) {
+        if (Constants.isTuningMode()
+                && (pivotKP.hasChanged(hashCode())
+                        || pivotKI.hasChanged(hashCode())
+                        || pivotKD.hasChanged(hashCode())
+                        || pivotKG.hasChanged(hashCode()))) {
             pivotIO.configPID(pivotKP.get(), pivotKI.get(), pivotKD.get(), pivotKG.get());
         }
 
@@ -123,7 +131,6 @@ public class Shooter extends SubsystemBase {
         rightSpeedFilter.add(getRightFlywheelSpeed());
         pivotPositionFilter.add(getPivotPosition().getRotations());
         Logger.recordOutput("Shooter/Pivot/Error", pivotSetpoint.getDegrees() - pivotInputs.position.getDegrees());
-
     }
 
     // Fly wheel functions
@@ -157,19 +164,14 @@ public class Shooter extends SubsystemBase {
     // Pivot functions
 
     public void setPivotPosition(Rotation2d position) {
-        pivotSetpoint = Rotation2d.fromRotations(
-                MathUtil.clamp(
-                        position.getRotations(),
-                        ShooterConstants.Pivot.MIN_ANGLE_ROTS,
-                        ShooterConstants.Pivot.MAX_ANGLE_ROTS
-                )
-        );
+        pivotSetpoint = Rotation2d.fromRotations(MathUtil.clamp(
+                position.getRotations(), ShooterConstants.Pivot.MIN_ANGLE_ROTS, ShooterConstants.Pivot.MAX_ANGLE_ROTS));
         pivotPositionFilter.clear();
         pivotIO.setPosition(pivotSetpoint);
     }
 
     public void holdPivotPosition() {
-//        pivotPositionFilter.clear();
+        //        pivotPositionFilter.clear();
         pivotIO.setPosition(pivotSetpoint);
     }
 
@@ -183,7 +185,7 @@ public class Shooter extends SubsystemBase {
     public void stopPivot() {
         setPivotVolts(0);
     }
-    //todo check to see if set pivot brake mode is needed
+    // todo check to see if set pivot brake mode is needed
 
     // Feeder functions
     public void setFeederSpeed(double speedRPM) {
@@ -218,23 +220,20 @@ public class Shooter extends SubsystemBase {
         }
     }
 
-    public Rotation2d getPivotPosition(){
+    public Rotation2d getPivotPosition() {
         return pivotInputs.position;
     }
 
-    public boolean isPivotAtSetpoint(){
+    public boolean isPivotAtSetpoint() {
         return MathUtil.isNear(
-                pivotSetpoint.getRotations(),pivotPositionFilter.getAverage(), ShooterConstants.Pivot.ERROR_TOLERANCE_ROTS);
+                pivotSetpoint.getRotations(),
+                pivotPositionFilter.getAverage(),
+                ShooterConstants.Pivot.ERROR_TOLERANCE_ROTS);
     }
 
-    public Command setPivotPositionComand(Supplier <Rotation2d> setpoint){
+    public Command setPivotPositionComand(Supplier<Rotation2d> setpoint) {
         return new FunctionalCommand(
-                () -> {},
-                () -> setPivotPosition(setpoint.get()),
-                (ignored) -> {},
-                this::isPivotAtSetpoint,
-                this);
-
+                () -> {}, () -> setPivotPosition(setpoint.get()), (ignored) -> {}, this::isPivotAtSetpoint, this);
     }
 
     public Command spinUpCommand(DoubleSupplier leftSetpoint, DoubleSupplier rightSetpoint) {
@@ -248,14 +247,11 @@ public class Shooter extends SubsystemBase {
 
     public Command spinFeederCommnad(DoubleSupplier setpoint) {
         return new FunctionalCommand(
-            () -> {}, 
-            () -> setFeederSpeed(setpoint.getAsDouble()), 
-            (ignored) -> {}, 
-            () -> false, 
-            this);
+                () -> {}, () -> setFeederSpeed(setpoint.getAsDouble()), (ignored) -> {}, () -> false, this);
     }
 
-    public Command spinUpAndSetPivotPosition(DoubleSupplier leftSetpoint, DoubleSupplier rightSetpoint, Supplier<Rotation2d> setpoint){
+    public Command spinUpAndSetPivotPosition(
+            DoubleSupplier leftSetpoint, DoubleSupplier rightSetpoint, Supplier<Rotation2d> setpoint) {
         return new FunctionalCommand(
                 () -> {},
                 () -> {
@@ -264,27 +260,22 @@ public class Shooter extends SubsystemBase {
                 },
                 (ignored) -> {},
                 () -> areFlywheelsSpunUp() && isPivotAtSetpoint(),
-                this
-        );
-
+                this);
     }
 
-
     @AutoLogOutput(key = "Shooter/Pivot/PivotSetpoint")
-    public Rotation2d getPivotSetpoint(){
+    public Rotation2d getPivotSetpoint() {
         return pivotSetpoint;
     }
 
     @AutoLogOutput(key = "Shooter/Pivot/AbsolutePivotSetpoint")
-    public Rotation2d getAbsolutePivotSetpoint(){
+    public Rotation2d getAbsolutePivotSetpoint() {
         return pivotSetpoint.plus(angleOffSet);
     }
 
     public void zeroPivot() {
         pivotIO.setEncoderPosition(0);
     }
-
-
 
     @AutoLogOutput(key = "Shooter/Flywheels/leftSetpointRPM")
     public double getLeftFlywheelSetpointRPM() {
@@ -300,5 +291,4 @@ public class Shooter extends SubsystemBase {
     public double getFeederSetpointRPM() {
         return feederSetpointRPM;
     }
-
 }
