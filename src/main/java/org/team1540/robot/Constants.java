@@ -13,6 +13,7 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+    public static final double LOOP_PERIOD_SECS = 0.02;
     public static final boolean CURRENT_MODE = Robot.isReal();
 
     public class Mode {}
