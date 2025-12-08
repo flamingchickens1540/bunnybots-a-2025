@@ -3,6 +3,7 @@ package org.team1540.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -13,21 +14,28 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
     public static final double LOOP_PERIOD_SECS = 0.02;
-    public static final boolean CURRENT_MODE = Robot.isReal();
+    private static final Mode SIM_MODE = Mode.SIM;
+    public static final Mode CURRENT_MODE = Robot.isReal() ? Mode.REAL : SIM_MODE;
+    
+    public enum Mode {
+        /** Running on a real robot. */
+        REAL,
+        /** Running a physics simulator. */
+        SIM,
+        /** Replaying from a log file. */
+        REPLAY
+    }
 
-    public class Mode {}
-}
+    private static final boolean TUNING_MODE = true;
 
-class FieldConstants {
-    public static final double fieldLength = Units.inchesToMeters(690.876);
-    public static final double fieldWidth = Units.inchesToMeters(317);
-    public static final double startingLineX =
-            Units.inchesToMeters(299.438); // Measured from the inside of starting line
-    public static final double algaeDiameter = Units.inchesToMeters(16);
+    public static boolean isTuningMode() {
+        return !DriverStation.isFMSAttached() && TUNING_MODE;
+    }
 
-    public static class Processor {
-        public static final Pose2d centerFace =
-                new Pose2d(Units.inchesToMeters(235.726), 0, Rotation2d.fromDegrees(90));
+    class FieldConstants {
+        public static final double fieldLength = Units.inchesToMeters(690.876);
+        public static final double fieldWidth = Units.inchesToMeters(317);
     }
 }
