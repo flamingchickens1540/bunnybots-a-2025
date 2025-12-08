@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.team1540.robot.Constants;
+import org.team1540.robot.RobotState;
 import org.team1540.robot.generated.TunerConstants;
 import org.team1540.robot.util.JoystickUtil;
 
