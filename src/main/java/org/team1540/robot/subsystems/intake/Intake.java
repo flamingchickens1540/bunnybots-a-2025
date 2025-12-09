@@ -2,8 +2,6 @@ package org.team1540.robot.subsystems.intake;
 
 import static org.team1540.robot.subsystems.intake.IntakeConstants.*;
 
-import org.littletonrobotics.junction.AutoLogOutput;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -12,8 +10,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.littletonrobotics.junction.AutoLogOutput;
 
-//All code that was causing errors due to the lack of utils is commented out
+// All code that was causing errors due to the lack of utils is commented out
 
 public class Intake extends SubsystemBase {
     public static boolean hasInstance = false;
@@ -48,7 +47,8 @@ public class Intake extends SubsystemBase {
 
     private Rotation2d pivotSetpoint = PIVOT_MIN_ANGLE;
 
-    private final TrapezoidProfile trapezoidProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(PIVOT_CRUISE_VELOCITY_RPS, PIVOT_ACCELERATION_RPS2));
+    private final TrapezoidProfile trapezoidProfile =
+            new TrapezoidProfile(new TrapezoidProfile.Constraints(PIVOT_CRUISE_VELOCITY_RPS, PIVOT_ACCELERATION_RPS2));
 
     private Intake(IntakeIO io) {
         if (hasInstance) throw new IllegalStateException("Instance of intake already exists");
@@ -86,7 +86,7 @@ public class Intake extends SubsystemBase {
         rollerDisconnectedAlert.set(!inputs.rollerConnected);
 
         // MechanismVisualizer.getInstance().setIntakeRotation(inputs.pivotPosition);
-        
+
         // LoggedTracer.record("Intake");
     }
 
@@ -134,7 +134,7 @@ public class Intake extends SubsystemBase {
         return Commands.startEnd(() -> this.setRollerVoltage(percent * 12), () -> this.setRollerVoltage(0), this);
     }
 
-    //Zero command is just copied over from last year's code for now.
+    // Zero command is just copied over from last year's code for now.
     // public Command zeroCommand() {
     //     return Commands.runOnce(() -> setPivotVoltage(0.3 * 12))
     //             .andThen(Commands.waitSeconds(0.5))
@@ -145,10 +145,10 @@ public class Intake extends SubsystemBase {
 
     public double timeToSetpoint(Rotation2d setpoint) {
         trapezoidProfile.calculate(
-            0.0,
-            new TrapezoidProfile.State(getPivotPosition().getRotations(), inputs.pivotMotorVelocityRPS),
-            new TrapezoidProfile.State(setpoint.getRotations(), 0));
-            return trapezoidProfile.totalTime();
+                0.0,
+                new TrapezoidProfile.State(getPivotPosition().getRotations(), inputs.pivotMotorVelocityRPS),
+                new TrapezoidProfile.State(setpoint.getRotations(), 0));
+        return trapezoidProfile.totalTime();
     }
 
     // public Command commandToSetpoint(IntakeState state) {

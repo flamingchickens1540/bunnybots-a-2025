@@ -22,4 +22,7 @@ public class IntakeConstants {
     public static final double PIVOT_KS = 0;
     public static final double PIVOT_KV = 0;
     public static final double PIVOT_KG = 0;
+
+    public static final double PIVOT_GEAR_RATIO = 1;
+    public static final double ROLLER_GEAR_RATIO = 1;
 }
