@@ -30,7 +30,7 @@ public class RobotState {
     }
 
     private final SwerveDriveKinematics kinematics =
-            new SwerveDriveKinematics(drivetrain.DrivetrainConstants.getModuleTranslations());
+            new SwerveDriveKinematics(DrivetrainConstants.getModuleTranslations());
     private final SwerveDrivePoseEstimator poseEstimator;
     private ChassisSpeeds robotVelocity = new ChassisSpeeds();
 
