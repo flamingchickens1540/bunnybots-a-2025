@@ -1,6 +1,7 @@
 package org.team1540.robot.subsystems.intake;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 
 public class IntakeConstants {
     // placeholder values for now
@@ -12,6 +13,8 @@ public class IntakeConstants {
 
     public static final Rotation2d PIVOT_MIN_ANGLE = Rotation2d.fromDegrees(0);
     public static final Rotation2d PIVOT_MAX_ANGLE = Rotation2d.fromDegrees(0);
+
+    public static final Translation3d ROTATIONAL_ORIGIN = new Translation3d(0.304800, 0.0, 0.1270000);
 
     public static final double PIVOT_KP = 0;
     public static final double PIVOT_KI = 0;

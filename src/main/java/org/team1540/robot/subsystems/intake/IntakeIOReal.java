@@ -11,6 +11,8 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -47,15 +49,30 @@ public class IntakeIOReal implements IntakeIO {
         rollerTalonFXConfigs.CurrentLimits.withStatorCurrentLimitEnable(true);
         rollerTalonFXConfigs.CurrentLimits.withStatorCurrentLimit(120);
         rollerTalonFXConfigs.CurrentLimits.withSupplyCurrentLimit(55);
+        rollerTalonFXConfigs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        rollerTalonFXConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        rollerTalonFXConfigs.Feedback.SensorToMechanismRatio = ROLLER_GEAR_RATIO;
 
         pivotTalonFXConfigs.CurrentLimits.withStatorCurrentLimitEnable(true);
         pivotTalonFXConfigs.CurrentLimits.withStatorCurrentLimit(120);
         pivotTalonFXConfigs.CurrentLimits.withSupplyCurrentLimit(70);
         pivotTalonFXConfigs.CurrentLimits.withSupplyCurrentLowerLimit(40);
         pivotTalonFXConfigs.CurrentLimits.withSupplyCurrentLowerTime(0.5);
+        pivotTalonFXConfigs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        pivotTalonFXConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        pivotTalonFXConfigs.Feedback.SensorToMechanismRatio = PIVOT_GEAR_RATIO;
 
         rollerTalonFXConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         pivotTalonFXConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+        Slot0Configs pivotGains = pivotTalonFXConfigs.Slot0;
+        pivotGains.kS = PIVOT_KS;
+        pivotGains.kV = PIVOT_KV;
+        pivotGains.kG = PIVOT_KG;
+        pivotGains.kP = PIVOT_KP;
+        pivotGains.kI = PIVOT_KI;
+        pivotGains.kD = PIVOT_KD;
+        pivotGains.GravityType = GravityTypeValue.Arm_Cosine;
 
         MotionMagicConfigs motionMagicConfigs = pivotTalonFXConfigs.MotionMagic;
         motionMagicConfigs.MotionMagicAcceleration = PIVOT_ACCELERATION_RPS2;
@@ -120,6 +137,7 @@ public class IntakeIOReal implements IntakeIO {
 
         inputs.rollerConnected = rollerConnectedDebounce.calculate(rollerStatus.isOK());
         inputs.rollerConnected = pivotConnectedDebounce.calculate(pivotStatus.isOK());
+
         inputs.rollerMotorVelocityRPS = rollerVelocity.getValueAsDouble();
         inputs.rollerMotorAppliedVolts = rollerAppliedVoltage.getValueAsDouble();
         inputs.rollerSupplyCurrentAmps = rollerSupplyCurrent.getValueAsDouble();
@@ -150,18 +168,3 @@ public class IntakeIOReal implements IntakeIO {
         pivotFalcon.getConfigurator().apply(configs);
     }
 }
-
-// IntakeIO interface✅
-// IntakeConstants class (will be adding to this as we go)✅
-// IntakeIO implementation🤕
-// Intake class
-
-// Write updateInputs✅
-// Learn about setPivotPID and setPivotFF✅
-// write setPivotSetpoint✅
-// and resetPivotPosition✅
-// Finish constructor🤕
-// Write fields🤕
-
-// Ask design how indexer handoff works
-// Go through OLD code (and search up questions/Slack)

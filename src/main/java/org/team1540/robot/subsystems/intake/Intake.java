@@ -2,15 +2,23 @@ package org.team1540.robot.subsystems.intake;
 
 import static org.team1540.robot.subsystems.intake.IntakeConstants.*;
 
+import org.littletonrobotics.junction.AutoLogOutput;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
     public static boolean hasInstance = false;
 
     // public enum IntakeState {
-    //     //add the states
+    //     STOW(new LoggedTunableNumber("Intake/Setpoints/Stow/AngleDegrees", PIVOT_MAX_ANGLE.getDegrees())),
+    //     INTAKE(new LoggedTunableNumber("Intake/Setpoints/Intake/AngleDegrees", PIVOT_MIN_ANGLE.getDegrees())),
 
     //     private final DoubleSupplier pivotPosition;
 
@@ -33,7 +41,12 @@ public class Intake extends SubsystemBase {
     // private final LoggedTunableNumber pivotKV = new LoggedTunableNumber("Intake/kV", PIVOT_KV);
     // private final LoggedTunableNumber pivotKG = new LoggedTunableNumber("Intake/kG", PIVOT_KG);
 
+    private final Alert pivotDisconnectedAlert = new Alert("Intake pivot disconnected", Alert.AlertType.kError);
+    private final Alert rollerDisconnectedAlert = new Alert("Intake roller disconnected", Alert.AlertType.kError);
+
     private Rotation2d pivotSetpoint = PIVOT_MIN_ANGLE;
+
+    private final TrapezoidProfile trapezoidProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(PIVOT_CRUISE_VELOCITY_RPS, PIVOT_ACCELERATION_RPS2));
 
     private Intake(IntakeIO io) {
         if (hasInstance) throw new IllegalStateException("Instance of intake already exists");
@@ -46,9 +59,35 @@ public class Intake extends SubsystemBase {
             stopAll();
         }
 
-        LoggedTracer.reset();
+        // Un-comment code after utils is fixed
 
-        io.updateInputs(inputs);
+        // LoggedTracer.reset();
+        // pivotDisconnectedAlert.set(!inputs.pivotConnected);
+        // rollerDisconnectedAlert.set(!inputs.rollerConnected);
+
+        // io.updateInputs(inputs);
+
+        // LoggedTunableNumber.ifChanged(
+        //     hashCode(),
+        //     () -> io.setPivotPID(pivotKP.get(), pivotKI.get(), pivotKD.get()),
+        //     pivotKP,
+        //     pivotKI,
+        //     pivotKD);
+        // LoggedTunableNumber.ifChanged(
+        //     hashCode(),
+        //     () -> io.setPivotFF(pivotKS.get(), pivotKV.get(),pivotKG.get()),
+        //     pivotKS,
+        //     pivotKV,
+        //     pivotKG);
+
+        // if (DriverStation.isDisabled()) stopAll();
+
+        // pivotDisconnectedAlert.set(!inputs.pivotConnected);
+        // rollerDisconnectedAlert.set(!inputs.rollerConnected);
+
+        // MechanismVisualizer.getInstance().setIntakeRotation(inputs.pivotPosition);
+        
+        // LoggedTracer.record("Intake");
     }
 
     public void setRollerVoltage(double voltage) {
@@ -68,6 +107,10 @@ public class Intake extends SubsystemBase {
         io.setPivotVoltage(voltage);
     }
 
+    public void resetPivotPosition(Rotation2d rotations) {
+        io.resetPivotPosition(rotations);
+    }
+
     public void stopAll() {
         setRollerVoltage(0);
         setPivotVoltage(0);
@@ -75,5 +118,45 @@ public class Intake extends SubsystemBase {
 
     public void holdPivot() {
         setPivotPosition(inputs.pivotPosition);
+    }
+
+    @AutoLogOutput(key = "Intake/PivotAtSetpoint")
+    public boolean isPivotAtSetpoint() {
+        return MathUtil.isNear(pivotSetpoint.getDegrees(), inputs.pivotPosition.getDegrees(), 3.0);
+    }
+
+    @AutoLogOutput(key = "Intake/PivotSetpoint")
+    public Rotation2d getPivotSetpoint() {
+        return pivotSetpoint;
+    }
+
+    public Command commandRunRoller(double percent) {
+        return Commands.startEnd(() -> this.setRollerVoltage(percent * 12), () -> this.setRollerVoltage(0), this);
+    }
+
+    //Zero command is just copied over from last year's code for now.
+    public Command zeroCommand() {
+        return Commands.runOnce(() -> setPivotVoltage(0.3 * 12))
+                .andThen(Commands.waitSeconds(0.5))
+                .andThen(Commands.waitUntil(() -> Math.abs(inputs.pivotStatorCurrentAmps) > 20)
+                        .andThen(Commands.runOnce(() -> resetPivotPosition(Rotation2d.fromDegrees(90))))
+                        .andThen(commandToSetpoint(IntakeState.STOW)));
+    }
+
+    public double timeToSetpoint(Rotation2d setpoint) {
+        trapezoidProfile.calculate(
+            0.0,
+            new TrapezoidProfile.State(getPivotPosition().getRotations(), inputs.pivotMotorVelocityRPS),
+            new TrapezoidProfile.State(setpoint.getRotations(), 0));
+            return trapezoidProfile.totalTime();
+    }
+
+    public Command commandToSetpoint(IntakeState state) {
+        return (Commands.run(() -> setPivotPosition(state.pivotPosition()), this)
+            .until(this::isPivotAtSetpoint)).handleInterrupt(this::holdPivot);
+    }
+
+    public static Intake createReal() {
+        return new Intake(new IntakeIOReal());
     }
 }
