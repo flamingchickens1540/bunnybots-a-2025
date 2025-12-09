@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+//All code that was causing errors due to the lack of utils is commented out
+
 public class Intake extends SubsystemBase {
     public static boolean hasInstance = false;
 
@@ -59,13 +61,11 @@ public class Intake extends SubsystemBase {
             stopAll();
         }
 
-        // Un-comment code after utils is fixed
-
         // LoggedTracer.reset();
-        // pivotDisconnectedAlert.set(!inputs.pivotConnected);
-        // rollerDisconnectedAlert.set(!inputs.rollerConnected);
+        pivotDisconnectedAlert.set(!inputs.pivotConnected);
+        rollerDisconnectedAlert.set(!inputs.rollerConnected);
 
-        // io.updateInputs(inputs);
+        io.updateInputs(inputs);
 
         // LoggedTunableNumber.ifChanged(
         //     hashCode(),
@@ -80,10 +80,10 @@ public class Intake extends SubsystemBase {
         //     pivotKV,
         //     pivotKG);
 
-        // if (DriverStation.isDisabled()) stopAll();
+        if (DriverStation.isDisabled()) stopAll();
 
-        // pivotDisconnectedAlert.set(!inputs.pivotConnected);
-        // rollerDisconnectedAlert.set(!inputs.rollerConnected);
+        pivotDisconnectedAlert.set(!inputs.pivotConnected);
+        rollerDisconnectedAlert.set(!inputs.rollerConnected);
 
         // MechanismVisualizer.getInstance().setIntakeRotation(inputs.pivotPosition);
         
@@ -135,13 +135,13 @@ public class Intake extends SubsystemBase {
     }
 
     //Zero command is just copied over from last year's code for now.
-    public Command zeroCommand() {
-        return Commands.runOnce(() -> setPivotVoltage(0.3 * 12))
-                .andThen(Commands.waitSeconds(0.5))
-                .andThen(Commands.waitUntil(() -> Math.abs(inputs.pivotStatorCurrentAmps) > 20)
-                        .andThen(Commands.runOnce(() -> resetPivotPosition(Rotation2d.fromDegrees(90))))
-                        .andThen(commandToSetpoint(IntakeState.STOW)));
-    }
+    // public Command zeroCommand() {
+    //     return Commands.runOnce(() -> setPivotVoltage(0.3 * 12))
+    //             .andThen(Commands.waitSeconds(0.5))
+    //             .andThen(Commands.waitUntil(() -> Math.abs(inputs.pivotStatorCurrentAmps) > 20)
+    //                     .andThen(Commands.runOnce(() -> resetPivotPosition(Rotation2d.fromDegrees(90))))
+    //                     .andThen(commandToSetpoint(IntakeState.STOW)));
+    // }
 
     public double timeToSetpoint(Rotation2d setpoint) {
         trapezoidProfile.calculate(
@@ -151,10 +151,10 @@ public class Intake extends SubsystemBase {
             return trapezoidProfile.totalTime();
     }
 
-    public Command commandToSetpoint(IntakeState state) {
-        return (Commands.run(() -> setPivotPosition(state.pivotPosition()), this)
-            .until(this::isPivotAtSetpoint)).handleInterrupt(this::holdPivot);
-    }
+    // public Command commandToSetpoint(IntakeState state) {
+    //     return (Commands.run(() -> setPivotPosition(state.pivotPosition()), this)
+    //         .until(this::isPivotAtSetpoint)).handleInterrupt(this::holdPivot);
+    // }
 
     public static Intake createReal() {
         return new Intake(new IntakeIOReal());
