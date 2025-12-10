@@ -22,13 +22,17 @@ public class Module {
             this.index = index;
         }
     }
+
     private final ModuleIO io;
     private final MountPosition mountPosition;
     private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
     private final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> constants;
     private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[] {};
 
-    public Module(ModuleIO io, MountPosition mountPosition, SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> constants) {
+    public Module(
+            ModuleIO io,
+            MountPosition mountPosition,
+            SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> constants) {
         this.io = io;
         this.mountPosition = mountPosition;
         this.constants = constants;
@@ -36,11 +40,12 @@ public class Module {
 
     public void periodic() {
         io.updateInputs(inputs);
-        Logger.processInputs("Drivetrain/module"+ mountPosition, inputs);
+        Logger.processInputs("Drivetrain/module" + mountPosition, inputs);
 
         odometryPositions = new SwerveModulePosition[inputs.odometryTurnPositions.length];
-        for (int i = 0; i<odometryPositions.length; i++) {
-            odometryPositions[i] = new SwerveModulePosition(inputs.odometryDrivePositionsRads[i]*constants.WheelRadius, inputs.odometryTurnPositions[i]);
+        for (int i = 0; i < odometryPositions.length; i++) {
+            odometryPositions[i] = new SwerveModulePosition(
+                    inputs.odometryDrivePositionsRads[i] * constants.WheelRadius, inputs.odometryTurnPositions[i]);
         }
     }
 
@@ -48,7 +53,7 @@ public class Module {
         state.optimize(inputs.turnPosition);
         state.cosineScale(inputs.turnPosition);
         io.setTurnPosition(state.angle);
-        io.setDriveVelocity(state.speedMetersPerSecond/constants.WheelRadius);
+        io.setDriveVelocity(state.speedMetersPerSecond / constants.WheelRadius);
     }
 
     public void stop() {
@@ -57,11 +62,11 @@ public class Module {
     }
 
     public double getDrivePositionM() {
-        return inputs.drivePositionRads*constants.WheelRadius;
+        return inputs.drivePositionRads * constants.WheelRadius;
     }
 
     public double getDriveVelocityMPS() {
-        return inputs.driveVelocityRadsPerSec*constants.WheelRadius;
+        return inputs.driveVelocityRadsPerSec * constants.WheelRadius;
     }
 
     public Rotation2d getTurnRotation() {

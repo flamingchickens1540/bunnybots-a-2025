@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.AutoLogOutputManager;
 import org.littletonrobotics.junction.Logger;
+import org.team1540.robot.subsystems.drive.DrivetrainConstants;
 import org.team1540.robot.subsystems.vision.apriltag.AprilTagVisionConstants;
 import org.team1540.robot.subsystems.vision.apriltag.AprilTagVisionIO;
 
@@ -30,7 +31,7 @@ public class RobotState {
     }
 
     private final SwerveDriveKinematics kinematics =
-            new SwerveDriveKinematics(drivetrain.DrivetrainConstants.getModuleTranslations());
+            new SwerveDriveKinematics(DrivetrainConstants.getModuleTranslations());
     private final SwerveDrivePoseEstimator poseEstimator;
     private ChassisSpeeds robotVelocity = new ChassisSpeeds();
 
@@ -42,8 +43,6 @@ public class RobotState {
     private SwerveModulePosition[] lastModulePositions = new SwerveModulePosition[] {
         new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()
     };
-
-    private Pose2d[] activeTrajectory;
 
     private final Field2d field = new Field2d();
 
@@ -125,18 +124,6 @@ public class RobotState {
 
     public void addVelocityData(ChassisSpeeds velocity) {
         robotVelocity = velocity;
-    }
-
-    public void setActiveTrajectory(Pose2d... poses) {
-        activeTrajectory = poses;
-        field.getObject("trajectory").setPoses(activeTrajectory);
-        Logger.recordOutput("Odometry/Trajectory/ActiveTrajectory", activeTrajectory);
-    }
-
-    public void clearActiveTrajectory() {
-        field.getObject("trajectory").setPoses();
-        Logger.recordOutput("Odometry/Trajectory/ActiveTrajectory", new Pose2d[0]);
-        activeTrajectory = null;
     }
 
     public void setTrajectoryTarget(Pose2d target) {
