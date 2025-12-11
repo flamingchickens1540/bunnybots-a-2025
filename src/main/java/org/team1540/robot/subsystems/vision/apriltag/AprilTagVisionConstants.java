@@ -4,7 +4,6 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.Filesystem;
 import java.io.IOException;
-import org.team1540.robot.Robot;
 
 public class AprilTagVisionConstants {
     public static final double MAX_ROBOT_Z_TOLERANCE = 0.5;
@@ -22,11 +21,10 @@ public class AprilTagVisionConstants {
                 throw new RuntimeException(e);
             }
         }
-        ;
     }
 
     static class cameraOffsets {
-        public static Transform3d frontRightCameraPLaceOnRobot;
-        public static Transform3d frontLeftCameraPLaceOnRobot;
+        public static Transform3d frontRightCameraPLaceOnRobot = new Transform3d();
+        public static Transform3d frontLeftCameraPLaceOnRobot = new Transform3d();
     }
 }

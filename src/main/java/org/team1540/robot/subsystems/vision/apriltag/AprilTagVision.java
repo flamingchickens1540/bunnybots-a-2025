@@ -3,7 +3,6 @@ package org.team1540.robot.subsystems.vision.apriltag;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.inputs.LoggableInputs;
 import org.team1540.robot.Constants;
 import org.team1540.robot.RobotState;
 
