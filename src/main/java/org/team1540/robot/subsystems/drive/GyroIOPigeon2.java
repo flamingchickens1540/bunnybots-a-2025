@@ -8,7 +8,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import java.util.Queue;
-import org.team1540.robot.generated.TunerConstants;
 
 public class GyroIOPigeon2 implements GyroIO {
     private final Pigeon2 pigeon =

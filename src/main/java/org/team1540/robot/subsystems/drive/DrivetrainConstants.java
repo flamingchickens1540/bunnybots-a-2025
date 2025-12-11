@@ -1,10 +1,6 @@
 package org.team1540.robot.subsystems.drive;
-import com.pathplanner.lib.config.ModuleConfig;
-import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
-import org.junit.jupiter.engine.Constants;
-import org.team1540.robot.generated.TunerConstants;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
