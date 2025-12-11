@@ -1,6 +1,7 @@
 package org.team1540.robot.subsystems.drive;
-import com.pathplanner.lib.util.swerve.SwerveSetpoint;
-import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
+
+import static org.team1540.robot.subsystems.drive.DrivetrainConstants.*;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
@@ -13,20 +14,16 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.team1540.robot.Constants;
 import org.team1540.robot.RobotState;
 import org.team1540.robot.generated.TunerConstants;
 import org.team1540.robot.util.JoystickUtil;
-
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static org.team1540.robot.subsystems.drive.DrivetrainConstants.*;
 
 public class Drivetrain extends SubsystemBase {
     public static ReentrantLock odometryLock = new ReentrantLock();
@@ -43,11 +40,12 @@ public class Drivetrain extends SubsystemBase {
     private SwerveModulePosition[] lastModulePositions = new SwerveModulePosition[4]; // For odometry delta filtering
     private double lastOdometryUpdateTime = 0.0;
     private final SwerveDriveKinematics kinematics = RobotState.getInstance().getKinematics();
-    
+
     @AutoLogOutput(key = "Drivetrain/DesiredSpeeds")
     private ChassisSpeeds desiredSpeeds = new ChassisSpeeds();
 
-    public Drivetrain(GyroIO gyroIO, ModuleIO flModuleIO, ModuleIO frModuleIO, ModuleIO blModuleIO, ModuleIO brModuleIO) {
+    public Drivetrain(
+            GyroIO gyroIO, ModuleIO flModuleIO, ModuleIO frModuleIO, ModuleIO blModuleIO, ModuleIO brModuleIO) {
         this.gyroIO = gyroIO;
         modules[0] = new Module(flModuleIO, Module.MountPosition.FL, TunerConstants.FrontLeft);
         modules[1] = new Module(frModuleIO, Module.MountPosition.FR, TunerConstants.FrontRight);
@@ -90,9 +88,9 @@ public class Drivetrain extends SubsystemBase {
             for (int moduleIndex = 0; moduleIndex < modules.length; moduleIndex++) {
                 double velocity = moduleDeltas[moduleIndex].distanceMeters / dt;
                 double turnVelocity = modulePositions[moduleIndex]
-                        .angle
-                        .minus(lastModulePositions[moduleIndex].angle)
-                        .getRadians()
+                                .angle
+                                .minus(lastModulePositions[moduleIndex].angle)
+                                .getRadians()
                         / dt;
                 if (Math.abs(velocity) > MAX_LINEAR_SPEED_MPS * 2
                         || Math.abs(turnVelocity) > MAX_STEER_SPEED_RAD_PER_SEC * 2) {
@@ -116,7 +114,8 @@ public class Drivetrain extends SubsystemBase {
         Logger.recordOutput("Odometry/RejectedSamples", rejectedSamples);
 
         ChassisSpeeds speeds = kinematics.toChassisSpeeds(getModuleStates());
-        speeds.omegaRadiansPerSecond = gyroInputs.isConnected ? gyroInputs.yawVelocityRadsPerSec : speeds.omegaRadiansPerSecond;
+        speeds.omegaRadiansPerSecond =
+                gyroInputs.isConnected ? gyroInputs.yawVelocityRadsPerSec : speeds.omegaRadiansPerSecond;
         RobotState.getInstance().addVelocityData(speeds);
 
         if (DriverStation.isEnabled()) {
@@ -126,8 +125,7 @@ public class Drivetrain extends SubsystemBase {
             for (int i = 0; i < 4; i++) {
                 modules[i].runSetpoint(setpointStates[i]);
             }
-        }
-        else {
+        } else {
             for (Module module : modules) module.stop(); // Stop modules when disabled
             Logger.recordOutput(
                     "Drivetrain/SwerveStates/Setpoints",
@@ -172,9 +170,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public Command percentDriveCommand(
-            Supplier<Translation2d> linearPercent,
-            DoubleSupplier omegaPercent,
-            BooleanSupplier fieldRelative) {
+            Supplier<Translation2d> linearPercent, DoubleSupplier omegaPercent, BooleanSupplier fieldRelative) {
         return Commands.run(
                         () -> {
                             var speeds = new ChassisSpeeds(
@@ -198,4 +194,12 @@ public class Drivetrain extends SubsystemBase {
                 fieldRelative);
     }
 
+    public static Drivetrain createReal() {
+        return new Drivetrain(
+                new GyroIOPigeon2(),
+                new ModuleIOTalonFX(TunerConstants.FrontLeft),
+                new ModuleIOTalonFX(TunerConstants.FrontRight),
+                new ModuleIOTalonFX(TunerConstants.BackLeft),
+                new ModuleIOTalonFX(TunerConstants.BackRight));
+    }
 }
