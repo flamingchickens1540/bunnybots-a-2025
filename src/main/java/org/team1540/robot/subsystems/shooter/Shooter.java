@@ -265,7 +265,7 @@ public class Shooter extends SubsystemBase {
         return pivotSetpoint;
     }
 
-    public Command zeroPivot() {
+    public Command commandZeroPivot() {
         return Commands.runOnce(() -> setPivotVolts(0.3 * 12))
                 .andThen(Commands.waitSeconds(0.5))
                 .andThen(Commands.waitUntil(() -> Math.abs(pivotInputs.currentStatorAmps) > HARD_STOP_CURRENT)
