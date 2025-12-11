@@ -13,12 +13,6 @@ public class AprilTagVision extends SubsystemBase {
     private final PhotonVisionIOInputsAutoLogged frontRightCameraInputs = new PhotonVisionIOInputsAutoLogged();
     private final PhotonVisionIOInputsAutoLogged frontLeftCameraInputs = new PhotonVisionIOInputsAutoLogged();
 
-    public AprilTagVision() {
-        frontLeftCameraIO =
-                new AprilTagVisionIOPhoton("left", AprilTagVisionConstants.cameraOffsets.frontLeftCameraPLaceOnRobot);
-        frontRightCameraIO =
-                new AprilTagVisionIOPhoton("right", AprilTagVisionConstants.cameraOffsets.frontRightCameraPLaceOnRobot);
-    }
 
     public AprilTagVision(AprilTagVisionIO frontLeftCameraIO, AprilTagVisionIO frontRightCameraIO) {
         this.frontLeftCameraIO = frontLeftCameraIO;
@@ -31,52 +25,30 @@ public class AprilTagVision extends SubsystemBase {
         }
         return new AprilTagVision(
                 new AprilTagVisionIOPhoton(
-                        "left simulated camera", AprilTagVisionConstants.cameraOffsets.frontLeftCameraPLaceOnRobot),
+                        "front-left", AprilTagVisionConstants.cameraOffsets.frontLeftCameraPLaceOnRobot),
                 new AprilTagVisionIOPhoton(
-                        "right simulated camera", AprilTagVisionConstants.cameraOffsets.frontRightCameraPLaceOnRobot));
+                        "front-right", AprilTagVisionConstants.cameraOffsets.frontRightCameraPLaceOnRobot));
     }
 
     public static AprilTagVision createDummy() {
         if (Constants.CURRENT_MODE== Constants.Mode.SIM) {
             DriverStation.reportWarning("Using dummy vision on real robot", false);
         }
-        return new AprilTagVision();
-    }
-
-    private AprilTagVisionIO.PoseObservation findLatest() {
-        double delta = Double.POSITIVE_INFINITY;
-        AprilTagVisionIOPhoton tl = (AprilTagVisionIOPhoton) frontLeftCameraIO;
-        AprilTagVisionIOPhoton tr = (AprilTagVisionIOPhoton) frontRightCameraIO;
-        AprilTagVisionIOPhoton best = null;
-
-        if (tl.getLastTimeStamp() - System.currentTimeMillis() < delta) {
-            delta = tl.getLastTimeStamp();
-            best = tl;
-        }
-        if (tr.getLastTimeStamp() - System.currentTimeMillis() < delta) {
-            //            delta = tr.getLastTimeStamp();
-            best = tr;
-        }
-        if (best != null) {
-            return best.getLast();
-        } else {
-            return null;
-        }
+        return new AprilTagVision(new AprilTagVisionIO("front-left"){},new AprilTagVisionIO("front-right"){});
     }
 
     @Override
     public void periodic() {
-        AprilTagVisionIOPhoton frontLeftCamera = (AprilTagVisionIOPhoton) frontLeftCameraIO;
-        AprilTagVisionIOPhoton frontRightCamera = (AprilTagVisionIOPhoton) frontRightCameraIO;
+
         frontLeftCameraIO.updateInputs(frontLeftCameraInputs);
         frontRightCameraIO.updateInputs(frontRightCameraInputs);
-        Logger.processInputs("Vision", (LoggableInputs) frontRightCameraInputs);
-        Logger.processInputs("Vision", (LoggableInputs) frontLeftCameraInputs);
-        if (frontLeftCamera.getLast() != null) {
-            RobotState.getInstance().addVisionMeasurement(frontLeftCamera.getLast());
+        Logger.processInputs("Vision/RightCamera", frontRightCameraInputs);
+        Logger.processInputs("Vision/LeftCamera", frontLeftCameraInputs);
+        for (AprilTagVisionIO.PoseObservation poseObservation: frontLeftCameraInputs.poseObservations) {
+                RobotState.getInstance().addVisionMeasurement(poseObservation);
         }
-        if (frontRightCamera.getLast() != null) {
-            RobotState.getInstance().addVisionMeasurement(frontRightCamera.getLast());
+        for (AprilTagVisionIO.PoseObservation poseObservation: frontRightCameraInputs.poseObservations) {
+            RobotState.getInstance().addVisionMeasurement(poseObservation);
         }
     }
 }

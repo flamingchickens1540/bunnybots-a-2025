@@ -38,6 +38,7 @@ public class AprilTagVisionIOPhoton extends AprilTagVisionIO {
                 double totalDistance = 0.0;
                 double totalAmbiguity = 0.0;
                 for (PhotonTrackedTarget target : poseEstimatorResult.get().targetsUsed) {
+                    lastSeenTagIDs.add(target.fiducialId);
                     totalDistance +=
                             target.getBestCameraToTarget().getTranslation().getNorm();
                     totalAmbiguity += target.poseAmbiguity;
@@ -51,23 +52,12 @@ public class AprilTagVisionIOPhoton extends AprilTagVisionIO {
             }
         }
         try {
-            last = poseObservations.getLast();
+            last = poseObservations.get(poseObservations.size()-1);
         } catch (Exception E) {
             last = null;
         }
-        inputs.poseObservations = (PoseObservation[]) poseObservations.toArray();
+        inputs.poseObservations = poseObservations.toArray(new PoseObservation[0]);
         inputs.seenTagIDs = lastSeenTagIDs.stream().mapToInt(Integer::intValue).toArray();
     }
 
-    public Pose3d getLastPose3d() {
-        return last.estimatedPoseMeters();
-    }
-
-    public double getLastTimeStamp() {
-        return last.timestampSecs();
-    }
-
-    public PoseObservation getLast() {
-        return last;
-    }
 }
