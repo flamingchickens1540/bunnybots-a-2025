@@ -1,6 +1,4 @@
 package org.team1540.robot.subsystems.drive;
-import com.pathplanner.lib.util.swerve.SwerveSetpoint;
-import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
@@ -17,7 +15,6 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.team1540.robot.Constants;
 import org.team1540.robot.RobotState;
-import org.team1540.robot.generated.TunerConstants;
 import org.team1540.robot.util.JoystickUtil;
 
 import java.util.concurrent.locks.ReentrantLock;
@@ -25,7 +22,6 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
 import static org.team1540.robot.subsystems.drive.DrivetrainConstants.*;
 
 public class Drivetrain extends SubsystemBase {
