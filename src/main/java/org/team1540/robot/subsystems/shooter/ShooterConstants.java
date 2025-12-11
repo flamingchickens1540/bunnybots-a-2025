@@ -1,5 +1,7 @@
 package org.team1540.robot.subsystems.shooter;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+
 public class ShooterConstants {
 
     public static class Flywheels {
@@ -22,9 +24,8 @@ public class ShooterConstants {
         public static final double KV = 67;
         public static final double KG = 67;
 
-
-        public static final double MAX_ANGLE_ROTS = 67;
-        public static final double MIN_ANGLE_ROTS = 67;
+        public static final Rotation2d MAX_ANGLE_ROTS = Rotation2d.fromRotations(67);
+        public static final Rotation2d MIN_ANGLE_ROTS = Rotation2d.fromRotations(67);
         public static final double CRUISE_VELOCITY_RPS = 67;
         public static final double MAX_ACCEL_RPS2 = 67;
         public static final double JERK_RPS3 = 67;
@@ -32,7 +33,9 @@ public class ShooterConstants {
         public static final double SUPPLY_CURRENT_LIMIT = 10;
         public static final double SUPPLY_CURRENT_LOWER_TIME = 0.1;
         public static final double SUPPLY_CURRENT_LOWER_LIMIT = 15;
-        public static final double ERROR_TOLERANCE_ROTS= 67;
+        public static final double ERROR_TOLERANCE_ROTS = 67;
+
+        public static final double HARD_STOP_CURRENT = 41;
     }
 
     public static class Feeder {

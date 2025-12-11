@@ -9,7 +9,8 @@ public interface ShooterPivotIO {
         public Rotation2d position = new Rotation2d();
         public double velocityRPS = 0.0;
         public double appliedVolts = 0.0;
-        public double currentAmps = 0.0;
+        public double currentSupplyAmps = 0.0;
+        public double currentStatorAmps = 0.0;
         public double tempCelsius = 0.0;
         public boolean isAtForwardLimit = false;
         public boolean isAtReverseLimit = false;
@@ -40,5 +41,5 @@ public interface ShooterPivotIO {
      */
     default void configPID(double kP, double kI, double kD, double kG) {}
 
-    default void setEncoderPosition(double rots) {}
+    default void setEncoderPosition(Rotation2d rots) {}
 }

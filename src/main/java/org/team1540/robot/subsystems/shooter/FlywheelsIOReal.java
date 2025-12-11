@@ -56,6 +56,7 @@ public class FlywheelsIOReal implements FlywheelsIO {
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
         // Apply the configuration to the left motor
+        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         leftMotor.getConfigurator().apply(config);
 
         // Set inverted and applys config to right motor

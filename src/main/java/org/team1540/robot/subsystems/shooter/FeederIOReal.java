@@ -68,11 +68,6 @@ public class FeederIOReal implements FeederIO {
     }
 
     @Override
-    public void setSpeed(double RPM) {
-        feederMotor.setControl(feederVelocityCtrlReq.withVelocity(RPM / 60));
-    }
-
-    @Override
     public void setVoltage(double volts) {
         feederMotor.setControl(feederVoltageCtrlReq.withOutput(volts));
     }

@@ -25,5 +25,4 @@ public interface FeederIO {
     /**
      * Runs closed loop at the specified RPMs
      */
-    default void setSpeed(double RPM) {}
 }

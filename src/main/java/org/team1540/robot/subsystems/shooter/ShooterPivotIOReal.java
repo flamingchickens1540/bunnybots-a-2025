@@ -18,13 +18,15 @@ public class ShooterPivotIOReal implements ShooterPivotIO {
     private final TalonFX motor = new TalonFX(MOTOR_ID);
 
     private final StatusSignal<Angle> position = motor.getPosition();
-    // check if it's an angle or double
+    // TODO: check if it's an angle or double
+
     private final StatusSignal<AngularVelocity> velocity = motor.getVelocity();
     private final StatusSignal<Voltage> appliedVoltage = motor.getMotorVoltage();
     private final StatusSignal<Current> suppliedCurrent = motor.getSupplyCurrent();
     private final StatusSignal<Temperature> temp = motor.getDeviceTemp();
     private final StatusSignal<ForwardLimitValue> forwardLimit = motor.getForwardLimit();
     private final StatusSignal<ReverseLimitValue> reverseLimit = motor.getReverseLimit();
+    private final StatusSignal<Current> statorCurrent = motor.getStatorCurrent();
 
     private final MotionMagicVoltage positionCtrlRequest = new MotionMagicVoltage(0).withSlot(0);
     private final VoltageOut voltageCtrlRequest = new VoltageOut(0);
@@ -37,9 +39,9 @@ public class ShooterPivotIOReal implements ShooterPivotIO {
         // todo: see if its inverted
 
         motorConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-        motorConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = MAX_ANGLE_ROTS;
+        motorConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = MAX_ANGLE_ROTS.getRotations();
         motorConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-        motorConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = MIN_ANGLE_ROTS;
+        motorConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = MIN_ANGLE_ROTS.getRotations();
 
         motorConfig.Slot0.kP = KP;
         motorConfig.Slot0.kI = KI;
@@ -73,8 +75,9 @@ public class ShooterPivotIOReal implements ShooterPivotIO {
         inputs.position = (edu.wpi.first.math.geometry.Rotation2d) position.getValue();
         inputs.velocityRPS = velocity.getValueAsDouble();
         inputs.appliedVolts = appliedVoltage.getValueAsDouble();
-        inputs.currentAmps = suppliedCurrent.getValueAsDouble();
+        inputs.currentSupplyAmps = suppliedCurrent.getValueAsDouble();
         inputs.tempCelsius = temp.getValueAsDouble();
+        inputs.currentStatorAmps = statorCurrent.getValueAsDouble();
     }
 
     @Override
@@ -104,7 +107,7 @@ public class ShooterPivotIOReal implements ShooterPivotIO {
     }
 
     @Override
-    public void setEncoderPosition(double rotations) {
-        motor.setPosition(rotations);
+    public void setEncoderPosition(Rotation2d rots) {
+        motor.setPosition(rots.getRotations());
     }
 }
