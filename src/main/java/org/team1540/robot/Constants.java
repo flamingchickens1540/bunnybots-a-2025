@@ -1,5 +1,8 @@
 package org.team1540.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 
 /**
@@ -11,15 +14,11 @@ import edu.wpi.first.wpilibj.DriverStation;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+    public static final double LOOP_PERIOD_SECS = 0.02;
     private static final Mode SIM_MODE = Mode.SIM;
     public static final Mode CURRENT_MODE = Robot.isReal() ? Mode.REAL : SIM_MODE;
-
-    private static final boolean TUNING_MODE = true;
-
-    public static boolean isTuningMode() {
-        return !DriverStation.isFMSAttached() && TUNING_MODE;
-    }
-
+    
     public enum Mode {
         /** Running on a real robot. */
         REAL,
@@ -27,5 +26,16 @@ public final class Constants {
         SIM,
         /** Replaying from a log file. */
         REPLAY
+    }
+
+    private static final boolean TUNING_MODE = true;
+
+    public static boolean isTuningMode() {
+        return !DriverStation.isFMSAttached() && TUNING_MODE;
+    }
+
+    class FieldConstants {
+        public static final double fieldLength = Units.inchesToMeters(690.876);
+        public static final double fieldWidth = Units.inchesToMeters(317);
     }
 }
