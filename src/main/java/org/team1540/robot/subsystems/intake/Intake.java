@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.team1540.robot.Constants;
 
 // All code that was causing errors due to the lack of utils is commented out
 
@@ -157,6 +158,16 @@ public class Intake extends SubsystemBase {
     // }
 
     public static Intake createReal() {
+        if (Constants.CURRENT_MODE != Constants.Mode.REAL) {
+            DriverStation.reportWarning("Using real intake on simulated robot", false);
+        }
         return new Intake(new IntakeIOReal());
+    }
+
+    public static Intake createDummy() {
+        if (Constants.CURRENT_MODE == Constants.Mode.REAL) {
+            DriverStation.reportWarning("Using dummy intake on real robot", false);
+        }
+        return new Intake(new IntakeIO() {});
     }
 }
