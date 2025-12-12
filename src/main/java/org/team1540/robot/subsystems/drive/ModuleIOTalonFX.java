@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.*;
 import java.util.Queue;
+import org.team1540.robot.generated.TunerConstants;
 import org.team1540.robot.util.ModuleHWConfigs;
 
 public class ModuleIOTalonFX implements ModuleIO {
@@ -57,9 +58,9 @@ public class ModuleIOTalonFX implements ModuleIO {
         this.constants = constants;
         ModuleHWConfigs configs = ModuleHWConfigs.fromModuleConstants(constants);
 
-        driveMotor = new TalonFX(constants.DriveMotorId);
-        turnMotor = new TalonFX(constants.SteerMotorId);
-        canCoder = new CANcoder(constants.EncoderId);
+        driveMotor = new TalonFX(constants.DriveMotorId, TunerConstants.kCANBus);
+        turnMotor = new TalonFX(constants.SteerMotorId, TunerConstants.kCANBus);
+        canCoder = new CANcoder(constants.EncoderId, TunerConstants.kCANBus);
 
         driveConfig = configs.driveConfig();
         turnConfig = configs.turnConfig();
@@ -98,7 +99,8 @@ public class ModuleIOTalonFX implements ModuleIO {
                 turnSupplyCurrent,
                 turnStatorCurrent,
                 turnVelocity,
-                turnTemp);
+                turnTemp,
+                canCoderPosition);
         BaseStatusSignal.setUpdateFrequencyForAll(
                 DrivetrainConstants.ODOMETRY_FREQUENCY_HZ, drivePosition, turnPosition);
 
@@ -121,7 +123,8 @@ public class ModuleIOTalonFX implements ModuleIO {
                 turnVelocity,
                 turnTemp,
                 drivePosition,
-                turnPosition);
+                turnPosition,
+                canCoderPosition);
 
         inputs.odometryTimestamps =
                 timestampQueue.stream().mapToDouble(Double::doubleValue).toArray();
