@@ -12,14 +12,13 @@ public class AprilTagVision extends SubsystemBase {
     private final PhotonVisionIOInputsAutoLogged frontRightCameraInputs = new PhotonVisionIOInputsAutoLogged();
     private final PhotonVisionIOInputsAutoLogged frontLeftCameraInputs = new PhotonVisionIOInputsAutoLogged();
 
-
     public AprilTagVision(AprilTagVisionIO frontLeftCameraIO, AprilTagVisionIO frontRightCameraIO) {
         this.frontLeftCameraIO = frontLeftCameraIO;
         this.frontRightCameraIO = frontRightCameraIO;
     }
 
     public static AprilTagVision createReal() {
-        if (Constants.CURRENT_MODE== Constants.Mode.REAL) {
+        if (Constants.CURRENT_MODE == Constants.Mode.REAL) {
             DriverStation.reportWarning("Using real vision on simulated robot", false);
         }
         return new AprilTagVision(
@@ -30,10 +29,10 @@ public class AprilTagVision extends SubsystemBase {
     }
 
     public static AprilTagVision createDummy() {
-        if (Constants.CURRENT_MODE== Constants.Mode.SIM) {
+        if (Constants.CURRENT_MODE == Constants.Mode.SIM) {
             DriverStation.reportWarning("Using dummy vision on real robot", false);
         }
-        return new AprilTagVision(new AprilTagVisionIO("front-left"){},new AprilTagVisionIO("front-right"){});
+        return new AprilTagVision(new AprilTagVisionIO("front-left") {}, new AprilTagVisionIO("front-right") {});
     }
 
     @Override
@@ -43,10 +42,10 @@ public class AprilTagVision extends SubsystemBase {
         frontRightCameraIO.updateInputs(frontRightCameraInputs);
         Logger.processInputs("Vision/RightCamera", frontRightCameraInputs);
         Logger.processInputs("Vision/LeftCamera", frontLeftCameraInputs);
-        for (AprilTagVisionIO.PoseObservation poseObservation: frontLeftCameraInputs.poseObservations) {
-                RobotState.getInstance().addVisionMeasurement(poseObservation);
+        for (AprilTagVisionIO.PoseObservation poseObservation : frontLeftCameraInputs.poseObservations) {
+            RobotState.getInstance().addVisionMeasurement(poseObservation);
         }
-        for (AprilTagVisionIO.PoseObservation poseObservation: frontRightCameraInputs.poseObservations) {
+        for (AprilTagVisionIO.PoseObservation poseObservation : frontRightCameraInputs.poseObservations) {
             RobotState.getInstance().addVisionMeasurement(poseObservation);
         }
     }

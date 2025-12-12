@@ -271,10 +271,9 @@ public class Shooter extends SubsystemBase {
                 .andThen(Commands.waitUntil(() -> Math.abs(pivotInputs.currentStatorAmps) > HARD_STOP_CURRENT)
                         .andThen(Commands.runOnce(() -> setPivotPosition(getPivotPosition()))))
                 .andThen(this::resetEncodePosition);
-
     }
 
-    public void resetEncodePosition(){
+    public void resetEncodePosition() {
         pivotIO.setEncoderPosition(Rotation2d.kZero);
     }
 
