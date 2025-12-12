@@ -23,8 +23,20 @@ public class Indexer extends SubsystemBase {
         Logger.processInputs("Indexer", inputs);
     }
 
+    public boolean getSensorTripped() {
+        if (inputs.sensorConnected) {
+            return inputs.sensorTripped;
+        }
+        return false;
+    }
+
     public Command runIndexer(double percent) {
-        return Commands.startEnd(()-> {io.setRightVoltage(percent * 12.0); io.setUpperVoltage(percent * 12.0);}, io::stopAll);
+        return Commands.startEnd(
+                () -> {
+                    io.setRightVoltage(percent * 12.0);
+                    io.setUpperVoltage(percent * 12.0);
+                },
+                io::stopAll);
     }
 
     public Command commandStopIndexer() {

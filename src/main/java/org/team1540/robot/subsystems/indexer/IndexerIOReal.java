@@ -3,6 +3,7 @@ package org.team1540.robot.subsystems.indexer;
 import static org.team1540.robot.subsystems.indexer.IndexerConstants.*;
 
 import au.grapplerobotics.LaserCan;
+import au.grapplerobotics.interfaces.LaserCanInterface;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -80,8 +81,7 @@ public class IndexerIOReal implements IndexerIO {
                 upperSupplyCurrent,
                 upperStatorCurrent,
                 upperTemp,
-                upperVelocity
-        );
+                upperVelocity);
 
         rightMotor.optimizeBusUtilization();
         upperMotor.optimizeBusUtilization();
@@ -99,8 +99,7 @@ public class IndexerIOReal implements IndexerIO {
                 upperSupplyCurrent,
                 upperStatorCurrent,
                 upperTemp,
-                upperVelocity
-        );
+                upperVelocity);
 
         inputs.rightVelocityRPS = rightVelocity.getValueAsDouble();
         inputs.rightSupplyCurrentAmps = rightSupplyCurrent.getValueAsDouble();
@@ -113,6 +112,13 @@ public class IndexerIOReal implements IndexerIO {
         inputs.upperSupplyCurrentAmps = upperSupplyCurrent.getValueAsDouble();
         inputs.upperAppliedVolts = upperAppliedVoltage.getValueAsDouble();
         inputs.upperMotorTemp = upperTemp.getValueAsDouble();
+
+        LaserCanInterface.Measurement measurement = laserCan.getMeasurement();
+        inputs.sensorTripped =
+                measurement != null
+                && measurement.distance_mm <= LASER_CAN_DETECTION_DISTANCE_MM;
+
+        inputs.sensorConnected = measurement != null;
     }
 
     @Override

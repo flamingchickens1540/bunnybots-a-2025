@@ -40,5 +40,6 @@ public class ShooterConstants {
 
     public static class Feeder {
         public static final int FEEDER_ID = 67;
+        public static final int LASER_CAN_ID = 67;
     }
 }

@@ -1,7 +1,9 @@
 package org.team1540.robot.subsystems.shooter;
 
+import static org.team1540.robot.subsystems.indexer.IndexerConstants.LASER_CAN_ID;
 import static org.team1540.robot.subsystems.shooter.ShooterConstants.Pivot.*;
 
+import au.grapplerobotics.LaserCan;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -16,6 +18,7 @@ import edu.wpi.first.units.measure.*;
 public class ShooterPivotIOReal implements ShooterPivotIO {
 
     private final TalonFX motor = new TalonFX(MOTOR_ID);
+    private final LaserCan laserCan = new LaserCan(LASER_CAN_ID);
 
     private final StatusSignal<Angle> position = motor.getPosition();
     // TODO: check if it's an angle or double

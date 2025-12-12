@@ -6,6 +6,7 @@ public class IndexerConstants {
     public static final int UPPER_MOTOR_ID = 0;
 
     public static final int LASER_CAN_ID = 0;
+    public static final double LASER_CAN_DETECTION_DISTANCE_MM = 67;
 
     public static final double RIGHT_GEAR_RATIO = 1.0;
     public static final double UPPER_GEAR_RATIO = 1.0;

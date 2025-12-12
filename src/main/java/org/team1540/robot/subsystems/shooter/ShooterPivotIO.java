@@ -14,6 +14,9 @@ public interface ShooterPivotIO {
         public double tempCelsius = 0.0;
         public boolean isAtForwardLimit = false;
         public boolean isAtReverseLimit = false;
+
+        public boolean sensorConnected = false;
+        public boolean sensorTripped = false;
     }
 
     /**
