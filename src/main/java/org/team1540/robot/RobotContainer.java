@@ -44,20 +44,28 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
         // Tuning commands
-        copilot.start().and(copilot.back()).toggleOnTrue(shooter.tuningCommand().unless(() -> !Constants.isTuningMode()));
+        copilot.start()
+                .and(copilot.back())
+                .toggleOnTrue(shooter.tuningCommand().unless(() -> !Constants.isTuningMode()));
 
-        drivetrain.setDefaultCommand(drivetrain.teleopDriveCommand(driver.getHID(), () -> true));
-        driver.start().onTrue(Commands.runOnce(drivetrain::zeroFieldOrientationManual));
+        //        drivetrain.setDefaultCommand(drivetrain.teleopDriveCommand(driver.getHID(), () -> true));
+        //        driver.start().onTrue(Commands.runOnce(drivetrain::zeroFieldOrientationManual));
+        driver.leftTrigger().whileTrue(intake.commandIntake());
+        driver.rightTrigger().whileTrue(intake.commandToStow());
+        driver.a().whileTrue(intake.commandZeroPivot());
     }
 
     private void configureAutoRoutines() {
         if (Constants.isTuningMode()) {
-            autoChooser.addOption("Shooter FF Char", CharacterizationCommands.feedforward(
-                    volts -> shooter.setFlywheelVolts(volts, volts),
-                    () -> ((shooter.getBottomFlywheelSpeed() + shooter.getTopFlywheelSpeed()) / 2.0) / 60.0,
-                    shooter));
+            autoChooser.addOption(
+                    "Shooter FF Char",
+                    CharacterizationCommands.feedforward(
+                            volts -> shooter.setFlywheelVolts(volts, volts),
+                            () -> ((shooter.getBottomFlywheelSpeed() + shooter.getTopFlywheelSpeed()) / 2.0) / 60.0,
+                            shooter));
         }
-        autoChooser.addOption("Zero Mechanisms", Commands.parallel(shooter.commandZeroPivot(), intake.commandZeroPivot()));
+        autoChooser.addOption(
+                "Zero Mechanisms", Commands.parallel(shooter.commandZeroPivot(), intake.commandZeroPivot()));
     }
 
     /**

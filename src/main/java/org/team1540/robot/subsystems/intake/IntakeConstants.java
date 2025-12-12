@@ -14,8 +14,8 @@ public class IntakeConstants {
     public static final Rotation2d PIVOT_MIN_ANGLE = Rotation2d.fromDegrees(0);
     public static final Rotation2d PIVOT_MAX_ANGLE = Rotation2d.fromDegrees(0);
 
-    public static final Rotation2d PIVOT_STOW_ANGLE = Rotation2d.fromDegrees(67.0);
-    public static final Rotation2d PIVOT_INTAKE_ANGLE = Rotation2d.fromDegrees(0.0);
+    public static final Rotation2d PIVOT_STOW_ANGLE = Rotation2d.fromDegrees(0.0);
+    public static final Rotation2d PIVOT_INTAKE_ANGLE = Rotation2d.fromDegrees(67.0);
 
     public static final Translation3d ROTATIONAL_ORIGIN = new Translation3d(0.304800, 0.0, 0.1270000);
 

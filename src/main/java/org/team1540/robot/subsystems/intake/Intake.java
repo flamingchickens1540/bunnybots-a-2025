@@ -115,12 +115,8 @@ public class Intake extends SubsystemBase {
         return pivotSetpoint;
     }
 
-    public Command commandRunRoller(double percent) {
-        return Commands.startEnd(() -> this.setRollerVoltage(percent * 12), () -> this.setRollerVoltage(0), this);
-    }
-
     public Command commandZeroPivot() {
-        return Commands.runOnce(() -> setPivotVoltage(0.3 * 12))
+        return Commands.runOnce(() -> setPivotVoltage(0.1 * 12))
                 .andThen(Commands.waitSeconds(0.5))
                 .andThen(Commands.waitUntil(() -> Math.abs(inputs.pivotStatorCurrentAmps) > 20)
                         .andThen(Commands.runOnce(() -> resetPivotPosition(Rotation2d.fromDegrees(90))))
@@ -136,12 +132,15 @@ public class Intake extends SubsystemBase {
     }
 
     public Command commandToStow() {
-        return (Commands.run(() -> setPivotPosition(PIVOT_STOW_ANGLE)).until(this::isPivotAtSetpoint))
+        return (Commands.run(() -> setPivotPosition(PIVOT_STOW_ANGLE))
+                        .until(this::isPivotAtSetpoint)
+                        .andThen(commandRunRollers(0.0)))
                 .handleInterrupt(this::holdPivot);
     }
 
-    public Command commandToIntake() {
+    public Command commandIntake() {
         return (Commands.run(() -> setPivotPosition(PIVOT_INTAKE_ANGLE)).until(this::isPivotAtSetpoint))
+                .andThen(commandRunRollers(0.2))
                 .handleInterrupt(this::holdPivot);
     }
 

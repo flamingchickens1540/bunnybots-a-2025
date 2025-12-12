@@ -14,6 +14,8 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.team1540.robot.Constants;
+import org.team1540.robot.subsystems.indexer.FeederIO;
+import org.team1540.robot.subsystems.indexer.FeederIOReal;
 import org.team1540.robot.util.LoggedTunableNumber;
 
 public class Shooter extends SubsystemBase {
@@ -23,9 +25,6 @@ public class Shooter extends SubsystemBase {
 
     private final FlywheelsIO flywheelsIO;
     private final FlywheelsIOInputsAutoLogged flywheelInputs = new FlywheelsIOInputsAutoLogged();
-
-    private final FeederIO feederIO;
-    private final FeederIOInputsAutoLogged feederInputs = new FeederIOInputsAutoLogged();
 
     // Units: rotations
 
@@ -65,7 +64,6 @@ public class Shooter extends SubsystemBase {
         hasInstance = true;
         this.pivotIO = pivotIO;
         this.flywheelsIO = flywheelsIO;
-        this.feederIO = feederIO;
     }
 
     @Override
@@ -158,18 +156,6 @@ public class Shooter extends SubsystemBase {
         setPivotVolts(0);
     }
 
-    public void setFeederVolts(double volts) {
-        feederIO.setVoltage(MathUtil.clamp(volts, -12, 12));
-    }
-
-    public void stopFeeder() {
-        setFeederVolts(0);
-    }
-
-    public double getFeederSpeed() {
-        return feederInputs.feederVelocityRPM;
-    }
-
     /*  Command factories
     public Command spinUpCommand() {}
     public Command setPivotPositionCommand() {}
@@ -192,23 +178,21 @@ public class Shooter extends SubsystemBase {
     }
 
     public Command setPivotPositionCommand(Supplier<Rotation2d> setpoint) {
-        return Commands.run(
-                () -> setPivotPosition(setpoint.get()),
-                this);
+        return Commands.run(() -> setPivotPosition(setpoint.get()), this);
     }
 
     public Command spinUpCommand(Supplier<Double> topSetpoint, Supplier<Double> bottomSetpoint) {
-        return Commands.run(
-                () -> setFlywheelSpeeds(topSetpoint.get(), bottomSetpoint.get()),
-                this);
+        return Commands.run(() -> setFlywheelSpeeds(topSetpoint.get(), bottomSetpoint.get()), this);
     }
 
     public Command spinUpAndSetPivotPosition(
             DoubleSupplier topSetpoint, DoubleSupplier bottomSetpoint, Supplier<Rotation2d> setpoint) {
-        return Commands.runEnd(() -> {
-            setFlywheelSpeeds(topSetpoint.getAsDouble(), bottomSetpoint.getAsDouble());
-            setPivotPosition(setpoint.get());
-        }, this::stopFlywheels);
+        return Commands.runEnd(
+                () -> {
+                    setFlywheelSpeeds(topSetpoint.getAsDouble(), bottomSetpoint.getAsDouble());
+                    setPivotPosition(setpoint.get());
+                },
+                this::stopFlywheels);
     }
 
     @AutoLogOutput(key = "Shooter/Pivot/PivotSetpoint")

@@ -1,4 +1,4 @@
-package org.team1540.robot.subsystems.shooter;
+package org.team1540.robot.subsystems.indexer;
 
 import org.littletonrobotics.junction.AutoLog;
 
