@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.DriverStation;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-
     public static final double LOOP_PERIOD_SECS = 0.02;
     private static final Mode SIM_MODE = Mode.SIM;
     public static final Mode CURRENT_MODE = Robot.isReal() ? Mode.REAL : SIM_MODE;
