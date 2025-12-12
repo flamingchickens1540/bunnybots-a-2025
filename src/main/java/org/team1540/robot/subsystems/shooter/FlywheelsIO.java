@@ -6,15 +6,15 @@ public interface FlywheelsIO {
 
     @AutoLog
     class FlywheelsIOInputs {
-        public double leftAppliedVolts = 0.0;
-        public double leftCurrentAmps = 0.0;
-        public double leftVelocityRPM = 0.0;
-        public double leftTempCelsius = 0.0;
+        public double topAppliedVolts = 0.0;
+        public double topCurrentAmps = 0.0;
+        public double topVelocityRPM = 0.0;
+        public double topTempCelsius = 0.0;
 
-        public double rightAppliedVolts = 0.0;
-        public double rightCurrentAmps = 0.0;
-        public double rightVelocityRPM = 0.0;
-        public double rightTempCelsius = 0.0;
+        public double bottomAppliedVolts = 0.0;
+        public double bottomCurrentAmps = 0.0;
+        public double bottomVelocityRPM = 0.0;
+        public double bottomTempCelsius = 0.0;
     }
 
     /**
@@ -25,12 +25,12 @@ public interface FlywheelsIO {
     /**
      * Runs open loop at the specified voltages
      */
-    default void setVoltage(double leftVolts, double rightVolts) {}
+    default void setVoltage(double topVolts, double bottomVolts) {}
 
     /**
      * Runs closed loop at the specified RPMs
      */
-    default void setSpeeds(double leftRPM, double rightRPM) {}
+    default void setSpeeds(double topRPM, double bottomRPM) {}
 
     /**
      * Configures the PID controller

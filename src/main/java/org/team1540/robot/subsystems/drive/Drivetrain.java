@@ -171,9 +171,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public Command percentDriveCommand(
-            Supplier<Translation2d> linearPercent,
-            DoubleSupplier omegaPercent,
-            BooleanSupplier fieldRelative) {
+            Supplier<Translation2d> linearPercent, DoubleSupplier omegaPercent, BooleanSupplier fieldRelative) {
         return Commands.run(
                         () -> {
                             var speeds = new ChassisSpeeds(

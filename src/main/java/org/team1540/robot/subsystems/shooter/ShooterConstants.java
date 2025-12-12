@@ -5,8 +5,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public class ShooterConstants {
 
     public static class Flywheels {
-        public static final int LEFT_ID = 67;
-        public static final int RIGHT_ID = 67;
+        public static final int TOP_ID = 67;
+        public static final int BOTTOM_ID = 67;
 
         public static final double KP = 67;
         public static final double KI = 67;

@@ -18,26 +18,26 @@ import edu.wpi.first.units.measure.Voltage;
 
 public class FlywheelsIOReal implements FlywheelsIO {
 
-    private final TalonFX leftMotor = new TalonFX(LEFT_ID);
-    private final TalonFX rightMotor = new TalonFX(RIGHT_ID);
+    private final TalonFX topMotor = new TalonFX(TOP_ID);
+    private final TalonFX bottomMotor = new TalonFX(BOTTOM_ID);
 
-    private final StatusSignal<AngularVelocity> leftVelocity = leftMotor.getVelocity();
-    private final StatusSignal<Voltage> leftAppliedVolts = leftMotor.getMotorVoltage();
-    private final StatusSignal<Current> leftCurrent = leftMotor.getSupplyCurrent();
-    private final StatusSignal<Temperature> leftTempCelsius = leftMotor.getDeviceTemp();
+    private final StatusSignal<AngularVelocity> topVelocity = topMotor.getVelocity();
+    private final StatusSignal<Voltage> topAppliedVolts = topMotor.getMotorVoltage();
+    private final StatusSignal<Current> topCurrent = topMotor.getSupplyCurrent();
+    private final StatusSignal<Temperature> topTempCelsius = topMotor.getDeviceTemp();
 
-    private final StatusSignal<AngularVelocity> rightVelocity = rightMotor.getVelocity();
-    private final StatusSignal<Voltage> rightAppliedVolts = rightMotor.getMotorVoltage();
-    private final StatusSignal<Current> rightCurrent = rightMotor.getSupplyCurrent();
-    private final StatusSignal<Temperature> rightTempCelsius = rightMotor.getDeviceTemp();
+    private final StatusSignal<AngularVelocity> bottomVelocity = bottomMotor.getVelocity();
+    private final StatusSignal<Voltage> bottomAppliedVolts = bottomMotor.getMotorVoltage();
+    private final StatusSignal<Current> bottomCurrent = bottomMotor.getSupplyCurrent();
+    private final StatusSignal<Temperature> bottomTempCelsius = bottomMotor.getDeviceTemp();
 
-    private final VelocityVoltage leftVelocityCtrlReq =
+    private final VelocityVoltage topVelocityCtrlReq =
             new VelocityVoltage(0).withEnableFOC(true).withSlot(0);
-    private final VoltageOut leftVoltageCtrlReq = new VoltageOut(0).withEnableFOC(true);
+    private final VoltageOut topVoltageCtrlReq = new VoltageOut(0).withEnableFOC(true);
 
-    private final VelocityVoltage rightVelocityCtrlReq =
+    private final VelocityVoltage bottomVelocityCtrlReq =
             new VelocityVoltage(0).withEnableFOC(true).withSlot(0);
-    private final VoltageOut rightVoltageCtrlReq = new VoltageOut(0).withEnableFOC(true);
+    private final VoltageOut bottomVoltageCtrlReq = new VoltageOut(0).withEnableFOC(true);
 
     // Config ):
     public FlywheelsIOReal() {
@@ -57,74 +57,74 @@ public class FlywheelsIOReal implements FlywheelsIO {
 
         // Apply the configuration to the left motor
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-        leftMotor.getConfigurator().apply(config);
+        topMotor.getConfigurator().apply(config);
 
         // Set inverted and applys config to right motor
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-        rightMotor.getConfigurator().apply(config);
+        bottomMotor.getConfigurator().apply(config);
 
         // Sets update freqency for the listed values while disabling any other status signals
         BaseStatusSignal.setUpdateFrequencyForAll(
                 50,
-                leftVelocity,
-                leftAppliedVolts,
-                leftCurrent,
-                leftTempCelsius,
-                rightVelocity,
-                rightAppliedVolts,
-                rightCurrent,
-                rightTempCelsius);
+                topVelocity,
+                topAppliedVolts,
+                topCurrent,
+                topTempCelsius,
+                bottomVelocity,
+                bottomAppliedVolts,
+                bottomCurrent,
+                bottomTempCelsius);
 
-        leftMotor.optimizeBusUtilization();
-        rightMotor.optimizeBusUtilization();
+        topMotor.optimizeBusUtilization();
+        bottomMotor.optimizeBusUtilization();
     }
 
     @Override
     public void updateInputs(FlywheelsIOInputs inputs) {
         BaseStatusSignal.refreshAll(
-                leftVelocity,
-                leftAppliedVolts,
-                leftCurrent,
-                leftTempCelsius,
-                rightVelocity,
-                rightAppliedVolts,
-                rightCurrent,
-                rightTempCelsius);
+                topVelocity,
+                topAppliedVolts,
+                topCurrent,
+                topTempCelsius,
+                bottomVelocity,
+                bottomAppliedVolts,
+                bottomCurrent,
+                bottomTempCelsius);
 
-        inputs.leftVelocityRPM = leftVelocity.getValueAsDouble() * 60;
-        inputs.leftAppliedVolts = leftAppliedVolts.getValueAsDouble();
-        inputs.leftCurrentAmps = leftCurrent.getValueAsDouble();
-        inputs.leftTempCelsius = leftTempCelsius.getValueAsDouble();
+        inputs.topVelocityRPM = topVelocity.getValueAsDouble() * 60;
+        inputs.topAppliedVolts = topAppliedVolts.getValueAsDouble();
+        inputs.topCurrentAmps = topCurrent.getValueAsDouble();
+        inputs.topTempCelsius = topTempCelsius.getValueAsDouble();
 
-        inputs.rightVelocityRPM = rightVelocity.getValueAsDouble() * 60;
-        inputs.rightAppliedVolts = rightAppliedVolts.getValueAsDouble();
-        inputs.rightCurrentAmps = rightCurrent.getValueAsDouble();
-        inputs.rightTempCelsius = rightTempCelsius.getValueAsDouble();
+        inputs.bottomVelocityRPM = bottomVelocity.getValueAsDouble() * 60;
+        inputs.bottomAppliedVolts = bottomAppliedVolts.getValueAsDouble();
+        inputs.bottomCurrentAmps = bottomCurrent.getValueAsDouble();
+        inputs.bottomTempCelsius = bottomTempCelsius.getValueAsDouble();
     }
 
     @Override
-    public void setSpeeds(double leftRPM, double rightRPM) {
-        leftMotor.setControl(leftVelocityCtrlReq.withVelocity(leftRPM / 60));
-        rightMotor.setControl(rightVelocityCtrlReq.withVelocity(rightRPM / 60));
+    public void setSpeeds(double topRPM, double bottomRPM) {
+        topMotor.setControl(topVelocityCtrlReq.withVelocity(topRPM / 60));
+        bottomMotor.setControl(bottomVelocityCtrlReq.withVelocity(bottomRPM / 60));
     }
 
     @Override
-    public void setVoltage(double leftVolts, double rightVolts) {
-        leftMotor.setControl(leftVoltageCtrlReq.withOutput(leftVolts));
-        rightMotor.setControl(rightVoltageCtrlReq.withOutput(rightVolts));
+    public void setVoltage(double topVolts, double bottomVolts) {
+        topMotor.setControl(topVoltageCtrlReq.withOutput(topVolts));
+        bottomMotor.setControl(bottomVoltageCtrlReq.withOutput(bottomVolts));
     }
 
     // function for PID tunning
     @Override
     public void configPID(double kP, double kI, double kD, double kV, double kS) {
         Slot0Configs pidConfigs = new Slot0Configs();
-        leftMotor.getConfigurator().refresh(pidConfigs);
+        topMotor.getConfigurator().refresh(pidConfigs);
         pidConfigs.kP = kP;
         pidConfigs.kI = kI;
         pidConfigs.kD = kD;
         pidConfigs.kV = kV;
         pidConfigs.kS = kS;
-        leftMotor.getConfigurator().apply(pidConfigs);
-        rightMotor.getConfigurator().apply(pidConfigs);
+        topMotor.getConfigurator().apply(pidConfigs);
+        bottomMotor.getConfigurator().apply(pidConfigs);
     }
 }
