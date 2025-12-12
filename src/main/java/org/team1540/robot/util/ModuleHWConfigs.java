@@ -29,8 +29,9 @@ public record ModuleHWConfigs(
                 ? InvertedValue.Clockwise_Positive
                 : InvertedValue.CounterClockwise_Positive;
         turnConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        turnConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANdiPWM1;
+        turnConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
         turnConfig.Feedback.FeedbackRemoteSensorID = constants.EncoderId;
+        turnConfig.Feedback.RotorToSensorRatio = constants.SteerMotorGearRatio;
         turnConfig.Feedback.SensorToMechanismRatio = 1.0;
         turnConfig.CurrentLimits.SupplyCurrentLimit = 40;
         turnConfig.CurrentLimits.SupplyCurrentLimitEnable = true;

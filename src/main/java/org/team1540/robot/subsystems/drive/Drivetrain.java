@@ -125,6 +125,7 @@ public class Drivetrain extends SubsystemBase {
             for (int i = 0; i < 4; i++) {
                 modules[i].runSetpoint(setpointStates[i]);
             }
+            Logger.recordOutput("Drivetrain/SwerveStates/Setpoints", setpointStates);
         } else {
             for (Module module : modules) module.stop(); // Stop modules when disabled
             Logger.recordOutput(
@@ -170,7 +171,9 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public Command percentDriveCommand(
-            Supplier<Translation2d> linearPercent, DoubleSupplier omegaPercent, BooleanSupplier fieldRelative) {
+            Supplier<Translation2d> linearPercent,
+            DoubleSupplier omegaPercent,
+            BooleanSupplier fieldRelative) {
         return Commands.run(
                         () -> {
                             var speeds = new ChassisSpeeds(
@@ -192,5 +195,23 @@ public class Drivetrain extends SubsystemBase {
                 () -> JoystickUtil.deadzonedJoystickTranslation(-controller.getLeftY(), -controller.getLeftX(), 0.1),
                 () -> JoystickUtil.smartDeadzone(-controller.getRightX(), 0.1),
                 fieldRelative);
+    }
+
+    public static Drivetrain createReal() {
+        if (Constants.CURRENT_MODE != Constants.Mode.REAL)
+            DriverStation.reportWarning("Using real drivetrain on simulated robot", false);
+        return new Drivetrain(
+                new GyroIOPigeon2(),
+                new ModuleIOTalonFX(TunerConstants.FrontLeft),
+                new ModuleIOTalonFX(TunerConstants.FrontRight),
+                new ModuleIOTalonFX(TunerConstants.BackLeft),
+                new ModuleIOTalonFX(TunerConstants.BackRight));
+    }
+
+    public static Drivetrain createDummy() {
+        if (Constants.CURRENT_MODE == Constants.Mode.REAL)
+            DriverStation.reportWarning("Using dummy drivetrain on real robot", false);
+        return new Drivetrain(
+                new GyroIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {});
     }
 }
