@@ -1,6 +1,5 @@
 package org.team1540.robot.subsystems.vision.apriltag;
 
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import java.util.*;
 import org.photonvision.EstimatedRobotPose;
@@ -52,12 +51,11 @@ public class AprilTagVisionIOPhoton extends AprilTagVisionIO {
             }
         }
         try {
-            last = poseObservations.get(poseObservations.size()-1);
+            last = poseObservations.get(poseObservations.size() - 1);
         } catch (Exception E) {
             last = null;
         }
         inputs.poseObservations = poseObservations.toArray(new PoseObservation[0]);
         inputs.seenTagIDs = lastSeenTagIDs.stream().mapToInt(Integer::intValue).toArray();
     }
-
 }
