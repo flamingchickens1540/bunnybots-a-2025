@@ -2,6 +2,7 @@ package org.team1540.robot.subsystems.drive;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -22,7 +23,7 @@ public class GyroIOPigeon2 implements GyroIO {
     private final Queue<Double> yawPositionQueue;
 
     public GyroIOPigeon2() {
-        pigeon.getConfigurator().apply(TunerConstants.DrivetrainConstants.Pigeon2Configs);
+        pigeon.getConfigurator().apply(new Pigeon2Configuration());
         timestampQueue = OdometryThread.getInstance().makeTimestampQueue();
         yawPositionQueue = OdometryThread.getInstance().registerSignal(yawPosition);
         BaseStatusSignal.setUpdateFrequencyForAll(50, yawVelocity);
@@ -36,12 +37,12 @@ public class GyroIOPigeon2 implements GyroIO {
         inputs.odometryTimestamps =
                 timestampQueue.stream().mapToDouble(Double::doubleValue).toArray();
         inputs.odometryYawPositions =
-                yawPositionQueue.stream().map(Rotation2d::fromRotations).toArray(Rotation2d[]::new);
+                yawPositionQueue.stream().map(Rotation2d::fromDegrees).toArray(Rotation2d[]::new);
         yawPositionQueue.clear();
         timestampQueue.clear();
 
         inputs.isConnected = pigeon.isConnected();
-        inputs.yawPosition = Rotation2d.fromRotations(yawPosition.getValueAsDouble());
+        inputs.yawPosition = Rotation2d.fromDegrees(yawPosition.getValueAsDouble());
         inputs.yawVelocityRadsPerSec = Units.degreesToRadians(yawVelocity.getValueAsDouble());
     }
 }
