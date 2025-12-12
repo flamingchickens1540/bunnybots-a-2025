@@ -1,5 +1,6 @@
 package org.team1540.robot.subsystems.indexer;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -17,6 +18,8 @@ public class Indexer extends SubsystemBase {
     @Override
     public void periodic() {
         io.updateInputs(inputs);
+        if (DriverStation.isDisabled()) io.stopAll();
+
         Logger.processInputs("Indexer", inputs);
     }
 
@@ -28,8 +31,8 @@ public class Indexer extends SubsystemBase {
         return Commands.runEnd(() -> io.setUpperMMPosition(rotations), io::stop, this);
     }
 
-    public Command stopCommand() {
-        return Commands.runOnce(io::stop, this);
+    public Command commandStopIndexer() {
+        return Commands.runOnce(io::stopAll, this);
     }
 
     public static Indexer createReal() {

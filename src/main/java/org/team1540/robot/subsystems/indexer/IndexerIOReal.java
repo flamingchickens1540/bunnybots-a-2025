@@ -1,74 +1,132 @@
 package org.team1540.robot.subsystems.indexer;
 
+import static org.team1540.robot.subsystems.indexer.IndexerConstants.*;
+
+import au.grapplerobotics.LaserCan;
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Temperature;
+import edu.wpi.first.units.measure.Voltage;
 
 public class IndexerIOReal implements IndexerIO {
 
     private final TalonFX rightMotor = new TalonFX(RIGHT_MOTOR_ID);
     private final TalonFX upperMotor = new TalonFX(UPPER_MOTOR_ID);
 
+    private final LaserCan laserCan = new LaserCan(LASER_CAN_ID);
+
+    private final StatusSignal<Voltage> rightAppliedVoltage = rightMotor.getMotorVoltage();
+    private final StatusSignal<Current> rightSupplyCurrent = rightMotor.getSupplyCurrent();
+    private final StatusSignal<Current> rightStatorCurrent = rightMotor.getStatorCurrent();
+    private final StatusSignal<Temperature> rightTemp = rightMotor.getDeviceTemp();
+    private final StatusSignal<AngularVelocity> rightVelocity = rightMotor.getVelocity();
+
+    private final StatusSignal<Voltage> upperAppliedVoltage = upperMotor.getMotorVoltage();
+    private final StatusSignal<Current> upperSupplyCurrent = upperMotor.getSupplyCurrent();
+    private final StatusSignal<Current> upperStatorCurrent = upperMotor.getStatorCurrent();
+    private final StatusSignal<Temperature> upperTemp = upperMotor.getDeviceTemp();
+    private final StatusSignal<AngularVelocity> upperVelocity = upperMotor.getVelocity();
+
     private final MotionMagicVoltage rightMM = new MotionMagicVoltage(0).withEnableFOC(true);
     private final MotionMagicVoltage upperMM = new MotionMagicVoltage(0).withEnableFOC(true);
 
     public IndexerIOReal() {
-        TalonFXConfiguration rightCfg = new TalonFXConfiguration();
-        rightCfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        rightCfg.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-        rightCfg.Feedback.SensorToMechanismRatio = RIGHT_GEAR_RATIO;
-        rightCfg.CurrentLimits.StatorCurrentLimit = STATOR_LIMIT;
-        rightCfg.CurrentLimits.StatorCurrentLimitEnable = true;
-        rightCfg.CurrentLimits.SupplyCurrentLimit = SUPPLY_LIMIT;
-        rightCfg.CurrentLimits.SupplyCurrentLimitEnable = true;
-        rightCfg.Slot0.kP = kP;
-        rightCfg.Slot0.kI = kI;
-        rightCfg.Slot0.kD = kD;
-        rightCfg.MotionMagic.MotionMagicCruiseVelocity = CRUISE_VELOCITY_RPS;
-        rightCfg.MotionMagic.MotionMagicAcceleration = ACCELERATION_RPS2;
+        TalonFXConfiguration rightMotorConfig = new TalonFXConfiguration();
+        rightMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        rightMotorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        rightMotorConfig.Feedback.SensorToMechanismRatio = RIGHT_GEAR_RATIO;
+        rightMotorConfig.CurrentLimits.StatorCurrentLimit = STATOR_LIMIT;
+        rightMotorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+        rightMotorConfig.CurrentLimits.SupplyCurrentLimit = SUPPLY_LIMIT;
+        rightMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        rightMotorConfig.Slot0.kP = kP;
+        rightMotorConfig.Slot0.kI = kI;
+        rightMotorConfig.Slot0.kD = kD;
+        rightMotorConfig.MotionMagic.MotionMagicCruiseVelocity = CRUISE_VELOCITY_RPS;
+        rightMotorConfig.MotionMagic.MotionMagicAcceleration = ACCELERATION_RPS2;
 
-        TalonFXConfiguration upperCfg = new TalonFXConfiguration();
-        upperCfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        upperCfg.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-        upperCfg.Feedback.SensorToMechanismRatio = UPPER_GEAR_RATIO;
-        upperCfg.CurrentLimits.StatorCurrentLimit = STATOR_LIMIT;
-        upperCfg.CurrentLimits.StatorCurrentLimitEnable = true;
-        upperCfg.CurrentLimits.SupplyCurrentLimit = SUPPLY_LIMIT;
-        upperCfg.CurrentLimits.SupplyCurrentLimitEnable = true;
-        upperCfg.Slot0.kP = kP;
-        upperCfg.Slot0.kI = kI;
-        upperCfg.Slot0.kD = kD;
-        upperCfg.MotionMagic.MotionMagicCruiseVelocity = CRUISE_VELOCITY_RPS;
-        upperCfg.MotionMagic.MotionMagicAcceleration = ACCELERATION_RPS2;
+        TalonFXConfiguration upperMotorConfig = new TalonFXConfiguration();
+        upperMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        upperMotorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        upperMotorConfig.Feedback.SensorToMechanismRatio = UPPER_GEAR_RATIO;
+        upperMotorConfig.CurrentLimits.StatorCurrentLimit = STATOR_LIMIT;
+        upperMotorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+        upperMotorConfig.CurrentLimits.SupplyCurrentLimit = SUPPLY_LIMIT;
+        upperMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        upperMotorConfig.Slot0.kP = kP;
+        upperMotorConfig.Slot0.kI = kI;
+        upperMotorConfig.Slot0.kD = kD;
+        upperMotorConfig.MotionMagic.MotionMagicCruiseVelocity = CRUISE_VELOCITY_RPS;
+        upperMotorConfig.MotionMagic.MotionMagicAcceleration = ACCELERATION_RPS2;
 
-        rightMotor.getConfigurator().apply(rightCfg);
-        upperMotor.getConfigurator().apply(upperCfg);
+        rightMotor.getConfigurator().apply(rightMotorConfig);
+        upperMotor.getConfigurator().apply(upperMotorConfig);
+
+        BaseStatusSignal.setUpdateFrequencyForAll(
+                50.0,
+                rightAppliedVoltage,
+                rightSupplyCurrent,
+                rightStatorCurrent,
+                rightTemp,
+                rightVelocity,
+                upperAppliedVoltage,
+                upperSupplyCurrent,
+                upperStatorCurrent,
+                upperTemp,
+                upperVelocity
+        );
+
+        rightMotor.optimizeBusUtilization();
+        upperMotor.optimizeBusUtilization();
     }
 
     @Override
     public void updateInputs(IndexerIOInputs inputs) {
-        inputs.rightVelocityRPS = rightMotor.getVelocity().getValueAsDouble();
-        inputs.upperVelocityRPS = upperMotor.getVelocity().getValueAsDouble();
-        inputs.rightPositionRot = rightMotor.getPosition().getValueAsDouble();
-        inputs.upperPositionRot = upperMotor.getPosition().getValueAsDouble();
-        inputs.rightCurrentAmps = rightMotor.getStatorCurrent().getValueAsDouble();
-        inputs.upperCurrentAmps = upperMotor.getStatorCurrent().getValueAsDouble();
+        BaseStatusSignal.refreshAll(
+                rightAppliedVoltage,
+                rightSupplyCurrent,
+                rightStatorCurrent,
+                rightTemp,
+                rightVelocity,
+                upperAppliedVoltage,
+                upperSupplyCurrent,
+                upperStatorCurrent,
+                upperTemp,
+                upperVelocity
+        );
+
+        inputs.rightVelocityRPS = rightVelocity.getValueAsDouble();
+        inputs.rightSupplyCurrentAmps = rightSupplyCurrent.getValueAsDouble();
+        inputs.rightStatorCurrentAmps = rightStatorCurrent.getValueAsDouble();
+        inputs.rightAppliedVolts = upperAppliedVoltage.getValueAsDouble();
+        inputs.rightMotorTemp = rightTemp.getValueAsDouble();
+
+        inputs.upperVelocityRPS = upperVelocity.getValueAsDouble();
+        inputs.upperStatorCurrentAmps = upperStatorCurrent.getValueAsDouble();
+        inputs.upperSupplyCurrentAmps = upperSupplyCurrent.getValueAsDouble();
+        inputs.upperAppliedVolts = upperAppliedVoltage.getValueAsDouble();
+        inputs.upperMotorTemp = upperTemp.getValueAsDouble();
     }
 
     @Override
-    public void setRightMMPosition(double rotations) {
-        rightMotor.setControl(rightMM.withPosition(rotations));
+    public void setRightVoltage(double volts) {
+        rightMotor.setVoltage(volts);
     }
 
     @Override
-    public void setUpperMMPosition(double rotations) {
-        upperMotor.setControl(upperMM.withPosition(rotations));
+    public void setUpperVoltage(double volts) {
+        upperMotor.setVoltage(volts);
     }
 
     @Override
-    public void stop() {
+    public void stopAll() {
         rightMotor.stopMotor();
         upperMotor.stopMotor();
     }
