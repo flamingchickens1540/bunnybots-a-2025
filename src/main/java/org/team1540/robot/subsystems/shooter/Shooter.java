@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -28,8 +29,8 @@ public class Shooter extends SubsystemBase {
 
     // Units: rotations
 
-    private double leftFlywheelSetpointRPM;
-    private double rightFlywheelSetpointRPM;
+    private double topFlywheelSetpointRPM;
+    private double bottomFlywheelSetpointRPM;
 
     private Rotation2d pivotSetpoint = new Rotation2d();
 
@@ -51,46 +52,13 @@ public class Shooter extends SubsystemBase {
     private final LoggedTunableNumber flywheelsKS =
             new LoggedTunableNumber("Shooter/Flywheels/kS", ShooterConstants.Flywheels.KS);
 
-    private final LinearFilter leftSpeedFilter = LinearFilter.movingAverage(20);
+    private final LinearFilter topSpeedFilter = LinearFilter.movingAverage(20);
     // Units: RPM
-    private final LinearFilter rightSpeedFilter = LinearFilter.movingAverage(20);
+    private final LinearFilter bottomSpeedFilter = LinearFilter.movingAverage(20);
     private final LinearFilter pivotPositionFilter = LinearFilter.movingAverage(10);
 
     // todo shooter lerp
     private static boolean hasInstance = false;
-
-    /*
-     * Function: Constructor - DONE
-     * Function: Periodic - DONE
-     * Function: Create real [Leave until end]
-     *
-     * for feeder:
-     * Function: set speed - DONE
-     * Function: set volts - DONE
-     * Function: stop flywheels - DONE
-     * Function: Get left/right speed - DONE
-     * Function: get Spun-up % - DONE
-     * Function: get Spun-up boolean - DONE
-     *
-     * for pivot:
-     * Function: set pivot pos (pos2D)
-     * Function: holds pivot position
-     * Function: set poivot volts
-     * Function: stop pivot
-     * Function: is pivot at set point?
-     *
-     * for feeder:
-     * Function: set speed - DONE
-     * Function: set volts - DONE
-     * Function: stop feeder - DONE
-     * Fuunction: get speed - DONE
-     *
-     * Spin up command - DONE
-     * Set pivot pos command
-     * Spin up and set pivot pos command
-     *
-     * FEEDER COMMANDS [TBD]
-     */
 
     private Shooter(ShooterPivotIO pivotIO, FlywheelsIO flywheelsIO, FeederIO feederIO) {
         if (hasInstance) throw new IllegalStateException("Instance of shooter already exists");
@@ -129,34 +97,34 @@ public class Shooter extends SubsystemBase {
         }
 
         // Add values to filters
-        leftSpeedFilter.calculate(getLeftFlywheelSpeed());
-        rightSpeedFilter.calculate(getRightFlywheelSpeed());
+        topSpeedFilter.calculate(getTopFlywheelSpeed());
+        bottomSpeedFilter.calculate(getBottomFlywheelSpeed());
         pivotPositionFilter.calculate(getPivotPosition().getRotations());
         Logger.recordOutput("Shooter/Pivot/Error", pivotSetpoint.getDegrees() - pivotInputs.position.getDegrees());
     }
 
     // Fly wheel functions
-    public void setFlywheelSpeeds(double leftSpeedRPM, double rightSpeedRPM) {
-        leftFlywheelSetpointRPM = leftSpeedRPM;
-        rightFlywheelSetpointRPM = rightSpeedRPM;
-        flywheelsIO.setSpeeds(leftSpeedRPM, rightSpeedRPM);
+    public void setFlywheelSpeeds(double topSpeedRPM, double bottomSpeedRPM) {
+        topFlywheelSetpointRPM = topSpeedRPM;
+        bottomFlywheelSetpointRPM = bottomSpeedRPM;
+        flywheelsIO.setSpeeds(topSpeedRPM, bottomSpeedRPM);
     }
 
     public void setFlywheelVolts(double rightVolts, double leftVolts) {
         flywheelsIO.setVoltage(MathUtil.clamp(rightVolts, -12, 12), MathUtil.clamp(leftVolts, -12, 12));
     }
 
-    public double getRightFlywheelSpeed() {
-        return flywheelInputs.rightVelocityRPM;
+    public double getBottomFlywheelSpeed() {
+        return flywheelInputs.bottomVelocityRPM;
     }
 
-    public double getLeftFlywheelSpeed() {
-        return flywheelInputs.leftVelocityRPM;
+    public double getTopFlywheelSpeed() {
+        return flywheelInputs.topVelocityRPM;
     }
 
     public double getSpinUpPercent() {
-        return (getRightFlywheelSpeed() + getLeftFlywheelSpeed())
-                / (getRightFlywheelSetpointRPM() + getLeftFlywheelSetpointRPM());
+        return (getBottomFlywheelSpeed() + getTopFlywheelSpeed())
+                / (getBottomFlywheelSetpointRPM() + getTopFlywheelSetpointRPM());
     }
 
     public void stopFlywheels() {
@@ -189,13 +157,6 @@ public class Shooter extends SubsystemBase {
     public void stopPivot() {
         setPivotVolts(0);
     }
-    // todo check to see if set pivot brake mode is needed
-
-    // Feeder functions
-    public void setFeederSpeed(double speedRPM) {
-        feederSetpointRPM = speedRPM;
-        feederIO.setVoltage(speedRPM);
-    }
 
     public void setFeederVolts(double volts) {
         feederIO.setVoltage(MathUtil.clamp(volts, -12, 12));
@@ -216,12 +177,7 @@ public class Shooter extends SubsystemBase {
     */
 
     public boolean areFlywheelsSpunUp() {
-
-        if (getSpinUpPercent() >= 0.95) {
-            return true;
-        } else {
-            return false;
-        }
+        return getSpinUpPercent() >= 0.95;
     }
 
     public Rotation2d getPivotPosition() {
@@ -237,27 +193,22 @@ public class Shooter extends SubsystemBase {
 
     public Command setPivotPositionCommand(Supplier<Rotation2d> setpoint) {
         return Commands.run(
-                () -> {
-                    setPivotPosition(setpoint.get());
-                },
+                () -> setPivotPosition(setpoint.get()),
                 this);
     }
 
-    public Command spinUpCommand(Supplier<Double> leftSetpoint, Supplier<Double> rightSetpoint) {
+    public Command spinUpCommand(Supplier<Double> topSetpoint, Supplier<Double> bottomSetpoint) {
         return Commands.run(
-                () -> {
-                    setFlywheelSpeeds(leftSetpoint.get(), rightSetpoint.get());
-                    // code to exacut
-                },
+                () -> setFlywheelSpeeds(topSetpoint.get(), bottomSetpoint.get()),
                 this);
     }
 
     public Command spinUpAndSetPivotPosition(
-            Supplier<Double> leftSetpoint, Supplier<Double> rightSetpoint, Supplier<Rotation2d> setpoint) {
-        return Commands.run(() -> {
-            setFlywheelSpeeds(leftSetpoint.get(), rightSetpoint.get());
+            DoubleSupplier topSetpoint, DoubleSupplier bottomSetpoint, Supplier<Rotation2d> setpoint) {
+        return Commands.runEnd(() -> {
+            setFlywheelSpeeds(topSetpoint.getAsDouble(), bottomSetpoint.getAsDouble());
             setPivotPosition(setpoint.get());
-        });
+        }, this::stopFlywheels);
     }
 
     @AutoLogOutput(key = "Shooter/Pivot/PivotSetpoint")
@@ -267,28 +218,45 @@ public class Shooter extends SubsystemBase {
 
     public Command commandZeroPivot() {
         return Commands.runOnce(() -> setPivotVolts(0.3 * 12))
-                .andThen(Commands.waitSeconds(0.5))
-                .andThen(Commands.waitUntil(() -> Math.abs(pivotInputs.currentStatorAmps) > HARD_STOP_CURRENT)
-                        .andThen(Commands.runOnce(() -> setPivotPosition(getPivotPosition()))))
-                .andThen(this::resetEncodePosition);
+                .andThen(
+                        Commands.waitSeconds(0.5),
+                        Commands.waitUntil(() -> Math.abs(pivotInputs.currentStatorAmps) > HARD_STOP_CURRENT),
+                        Commands.runOnce(() -> resetEncoderPosition(Rotation2d.kCCW_90deg)),
+                        Commands.runOnce(() -> setPivotPosition(Rotation2d.kCCW_90deg)));
     }
 
-    public void resetEncodePosition() {
-        pivotIO.setEncoderPosition(Rotation2d.kZero);
+    public Command tuningCommand() {
+        LoggedTunableNumber topSpeedRPM = new LoggedTunableNumber("Shooter/Tuning/TopSpeedRPM", 5000);
+        LoggedTunableNumber bottomSpeedRPM = new LoggedTunableNumber("Shooter/Tuning/BottomSpeedRPM", 5000);
+        LoggedTunableNumber pivotAngleDegrees = new LoggedTunableNumber("Shooter/Tuning/PivotAngleDegrees", 45);
+        return spinUpAndSetPivotPosition(
+                topSpeedRPM, bottomSpeedRPM, () -> Rotation2d.fromDegrees(pivotAngleDegrees.getAsDouble()));
     }
 
-    @AutoLogOutput(key = "Shooter/Flywheels/leftSetpointRPM")
-    public double getLeftFlywheelSetpointRPM() {
-        return leftFlywheelSetpointRPM;
+    public void resetEncoderPosition(Rotation2d position) {
+        pivotIO.setEncoderPosition(position);
     }
 
-    @AutoLogOutput(key = "Shooter/Flywheels/rightSetpointRPM")
-    public double getRightFlywheelSetpointRPM() {
-        return rightFlywheelSetpointRPM;
+    @AutoLogOutput(key = "Shooter/Flywheels/topSetpointRPM")
+    public double getTopFlywheelSetpointRPM() {
+        return topFlywheelSetpointRPM;
+    }
+
+    @AutoLogOutput(key = "Shooter/Flywheels/bottomSetpointRPM")
+    public double getBottomFlywheelSetpointRPM() {
+        return bottomFlywheelSetpointRPM;
     }
 
     @AutoLogOutput(key = "Shooter/Feeder/feederSetpointRPM")
     public double getFeederSetpointRPM() {
         return feederSetpointRPM;
+    }
+
+    public static Shooter createReal() {
+        return new Shooter(new ShooterPivotIOReal(), new FlywheelsIOReal(), new FeederIOReal());
+    }
+
+    public static Shooter createDummy() {
+        return new Shooter(new ShooterPivotIO() {}, new FlywheelsIO() {}, new FeederIO() {});
     }
 }

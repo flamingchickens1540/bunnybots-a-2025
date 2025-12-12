@@ -114,9 +114,7 @@ public class IndexerIOReal implements IndexerIO {
         inputs.upperMotorTemp = upperTemp.getValueAsDouble();
 
         LaserCanInterface.Measurement measurement = laserCan.getMeasurement();
-        inputs.sensorTripped =
-                measurement != null
-                && measurement.distance_mm <= LASER_CAN_DETECTION_DISTANCE_MM;
+        inputs.sensorTripped = measurement != null && measurement.distance_mm <= LASER_CAN_DETECTION_DISTANCE_MM;
 
         inputs.sensorConnected = measurement != null;
     }

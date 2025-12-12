@@ -141,12 +141,14 @@ public class Intake extends SubsystemBase {
     }
 
     public Command commandToIntake() {
-        return (Commands.run(() -> setPivotPosition(PIVOT_INTAKE_ANGLE)).until(this::isPivotAtSetpoint)).handleInterrupt(this::holdPivot);
+        return (Commands.run(() -> setPivotPosition(PIVOT_INTAKE_ANGLE)).until(this::isPivotAtSetpoint))
+                .handleInterrupt(this::holdPivot);
     }
 
     public Command commandRunRollers(double percent) {
-        return (Commands.startEnd(()->setRollerVoltage(percent * 12.0), ()->setRollerVoltage(0.0)));
+        return (Commands.startEnd(() -> setRollerVoltage(percent * 12.0), () -> setRollerVoltage(0.0)));
     }
+
     public static Intake createReal() {
         if (Constants.CURRENT_MODE != Constants.Mode.REAL) {
             DriverStation.reportWarning("Using real intake on simulated robot", false);
