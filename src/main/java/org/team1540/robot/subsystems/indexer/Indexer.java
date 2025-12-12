@@ -23,12 +23,8 @@ public class Indexer extends SubsystemBase {
         Logger.processInputs("Indexer", inputs);
     }
 
-    public Command moveRightTo(double rotations) {
-        return Commands.runEnd(() -> io.setRightMMPosition(rotations), io::stop, this);
-    }
-
-    public Command moveUpperTo(double rotations) {
-        return Commands.runEnd(() -> io.setUpperMMPosition(rotations), io::stop, this);
+    public Command runIndexer(double percent) {
+        return Commands.startEnd(()-> {io.setRightVoltage(percent * 12.0); io.setUpperVoltage(percent * 12.0);}, io::stopAll);
     }
 
     public Command commandStopIndexer() {
