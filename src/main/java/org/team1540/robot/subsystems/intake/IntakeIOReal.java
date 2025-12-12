@@ -136,18 +136,20 @@ public class IntakeIOReal implements IntakeIO {
                 pivotVelocity, pivotPosition, pivotAppliedVoltage, pivotSupplyCurrent, pivotStatorCurrent, pivotTemp);
 
         inputs.rollerConnected = rollerConnectedDebounce.calculate(rollerStatus.isOK());
-        inputs.rollerConnected = pivotConnectedDebounce.calculate(pivotStatus.isOK());
+        inputs.pivotConnected = pivotConnectedDebounce.calculate(pivotStatus.isOK());
 
         inputs.rollerMotorVelocityRPS = rollerVelocity.getValueAsDouble();
         inputs.rollerMotorAppliedVolts = rollerAppliedVoltage.getValueAsDouble();
         inputs.rollerSupplyCurrentAmps = rollerSupplyCurrent.getValueAsDouble();
         inputs.rollerStatorCurrentAmps = rollerStatorCurrent.getValueAsDouble();
+        inputs.rollerMotorTemp = rollerTemp.getValueAsDouble();
 
         inputs.pivotMotorVelocityRPS = pivotVelocity.getValueAsDouble();
         inputs.pivotPosition = Rotation2d.fromRotations(pivotPosition.getValueAsDouble());
         inputs.pivotMotorAppliedVolts = pivotAppliedVoltage.getValueAsDouble();
         inputs.pivotSupplyCurrentAmps = pivotSupplyCurrent.getValueAsDouble();
         inputs.pivotStatorCurrentAmps = pivotStatorCurrent.getValueAsDouble();
+        inputs.pivotMotorTemp = pivotTemp.getValueAsDouble();
     }
 
     public void setPivotPID(double kP, double kI, double kD) {

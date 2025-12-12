@@ -8,11 +8,14 @@ public class IntakeConstants {
 
     public static final int ROLLER_MOTOR_ID = 0;
     public static final int PIVOT_MOTOR_ID = 0;
-    public static final int PIVOT_CRUISE_VELOCITY_RPS = 0;
-    public static final int PIVOT_ACCELERATION_RPS2 = 0;
+    public static final double PIVOT_CRUISE_VELOCITY_RPS = 0.0;
+    public static final double PIVOT_ACCELERATION_RPS2 = 0.0;
 
     public static final Rotation2d PIVOT_MIN_ANGLE = Rotation2d.fromDegrees(0);
     public static final Rotation2d PIVOT_MAX_ANGLE = Rotation2d.fromDegrees(0);
+
+    public static final Rotation2d PIVOT_STOW_ANGLE = Rotation2d.fromDegrees(67.0);
+    public static final Rotation2d PIVOT_INTAKE_ANGLE = Rotation2d.fromDegrees(0.0);
 
     public static final Translation3d ROTATIONAL_ORIGIN = new Translation3d(0.304800, 0.0, 0.1270000);
 
@@ -23,6 +26,6 @@ public class IntakeConstants {
     public static final double PIVOT_KV = 0;
     public static final double PIVOT_KG = 0;
 
-    public static final double PIVOT_GEAR_RATIO = 1;
-    public static final double ROLLER_GEAR_RATIO = 1;
+    public static final double PIVOT_GEAR_RATIO = 75.0;
+    public static final double ROLLER_GEAR_RATIO = 1.0;
 }
