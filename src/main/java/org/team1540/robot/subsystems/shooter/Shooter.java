@@ -59,7 +59,7 @@ public class Shooter extends SubsystemBase {
     // todo shooter lerp
     private static boolean hasInstance = false;
 
-    private Shooter(ShooterPivotIO pivotIO, FlywheelsIO flywheelsIO, FeederIO feederIO) {
+    private Shooter(ShooterPivotIO pivotIO, FlywheelsIO flywheelsIO) {
         if (hasInstance) throw new IllegalStateException("Instance of shooter already exists");
         hasInstance = true;
         this.pivotIO = pivotIO;
@@ -237,10 +237,10 @@ public class Shooter extends SubsystemBase {
     }
 
     public static Shooter createReal() {
-        return new Shooter(new ShooterPivotIOReal(), new FlywheelsIOReal(), new FeederIOReal());
+        return new Shooter(new ShooterPivotIOReal(), new FlywheelsIOReal());
     }
 
     public static Shooter createDummy() {
-        return new Shooter(new ShooterPivotIO() {}, new FlywheelsIO() {}, new FeederIO() {});
+        return new Shooter(new ShooterPivotIO() {}, new FlywheelsIO() {});
     }
 }

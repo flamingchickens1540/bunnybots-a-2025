@@ -6,8 +6,8 @@ import edu.wpi.first.math.geometry.Translation3d;
 public class IntakeConstants {
     // placeholder values for now
 
-    public static final int ROLLER_MOTOR_ID = 0;
-    public static final int PIVOT_MOTOR_ID = 0;
+    public static final int ROLLER_MOTOR_ID = 27;
+    public static final int PIVOT_MOTOR_ID = 17;
     public static final double PIVOT_CRUISE_VELOCITY_RPS = 0.0;
     public static final double PIVOT_ACCELERATION_RPS2 = 0.0;
 

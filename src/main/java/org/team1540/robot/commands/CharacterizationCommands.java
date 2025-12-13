@@ -13,7 +13,7 @@ import org.team1540.robot.util.LoggedTunableNumber;
 import org.team1540.robot.util.math.PolynomialRegression;
 
 public class CharacterizationCommands {
-    private static final double START_DELAY_SECS = 1.0;
+    private static final double START_DELAY_SECS = 0.5;
 
     private static final LoggedTunableNumber ffRampVoltsPerSec =
             new LoggedTunableNumber("Characterization/Feedforward/RampVoltsPerSec", 0.1);

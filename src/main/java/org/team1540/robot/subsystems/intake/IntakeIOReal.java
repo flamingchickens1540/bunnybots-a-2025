@@ -17,6 +17,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.*;
+import org.team1540.robot.generated.TunerConstants;
 
 public class IntakeIOReal implements IntakeIO {
     private final TalonFX rollerFalcon = new TalonFX(ROLLER_MOTOR_ID);
@@ -28,7 +29,7 @@ public class IntakeIOReal implements IntakeIO {
     private final StatusSignal<Current> rollerStatorCurrent = rollerFalcon.getStatorCurrent();
     private final StatusSignal<Temperature> rollerTemp = rollerFalcon.getDeviceTemp();
 
-    private final TalonFX pivotFalcon = new TalonFX(PIVOT_MOTOR_ID);
+    private final TalonFX pivotFalcon = new TalonFX(PIVOT_MOTOR_ID, TunerConstants.kCANBus);
     private final MotionMagicVoltage pivotPositionRequest = new MotionMagicVoltage(0).withSlot(0);
     private final VoltageOut pivotVoltageRequest = new VoltageOut(0);
     private final StatusSignal<AngularVelocity> pivotVelocity = pivotFalcon.getVelocity();

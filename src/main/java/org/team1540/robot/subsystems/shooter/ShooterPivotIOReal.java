@@ -75,7 +75,7 @@ public class ShooterPivotIOReal implements ShooterPivotIO {
                 position, velocity, suppliedCurrent, appliedVoltage, temp, forwardLimit, reverseLimit);
         inputs.isAtForwardLimit = forwardLimit.getValue() == ForwardLimitValue.ClosedToGround;
         inputs.isAtReverseLimit = reverseLimit.getValue() == ReverseLimitValue.ClosedToGround;
-        inputs.position = (edu.wpi.first.math.geometry.Rotation2d) position.getValue();
+        inputs.position = Rotation2d.fromRotations(position.getValueAsDouble());
         inputs.velocityRPS = velocity.getValueAsDouble();
         inputs.appliedVolts = appliedVoltage.getValueAsDouble();
         inputs.currentSupplyAmps = suppliedCurrent.getValueAsDouble();
