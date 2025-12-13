@@ -17,18 +17,20 @@ public class ShooterConstants {
 
     public static class Pivot {
         public static final int MOTOR_ID = 15;
-        public static final double KP = 67;
+        public static final double KP = 670;
         public static final double KI = 0.0;
         public static final double KD = 0.0;
         public static final double KS = 0.0;
         public static final double KV = 0.0;
         public static final double KG = 0.0;
 
-        public static final Rotation2d MAX_ANGLE_ROTS = Rotation2d.fromRotations(67);
-        public static final Rotation2d MIN_ANGLE_ROTS = Rotation2d.fromRotations(67);
-        public static final double CRUISE_VELOCITY_RPS = 67;
-        public static final double MAX_ACCEL_RPS2 = 67;
-        public static final double JERK_RPS3 = 67;
+        public static final double PIVOT_GEAR_RATIO = (50.0 / 12.0) * (50.0 / 20) * 6;
+
+        public static final Rotation2d MAX_ANGLE_ROTS = Rotation2d.kCCW_90deg;
+        public static final Rotation2d MIN_ANGLE_ROTS = Rotation2d.fromDegrees(57);
+        public static final double CRUISE_VELOCITY_RPS = 2.0;
+        public static final double MAX_ACCEL_RPS2 = 20.0;
+        public static final double JERK_RPS3 = 200.0;
 
         public static final double SUPPLY_CURRENT_LIMIT = 10;
         public static final double SUPPLY_CURRENT_LOWER_TIME = 0.1;

@@ -44,15 +44,15 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
         // Tuning commands
-        copilot.start()
-                .and(copilot.back())
-                .toggleOnTrue(shooter.tuningCommand().unless(() -> !Constants.isTuningMode()));
+        copilot.back().toggleOnTrue(shooter.tuningCommand().unless(() -> !Constants.isTuningMode()));
 
-        //        drivetrain.setDefaultCommand(drivetrain.teleopDriveCommand(driver.getHID(), () -> true));
-        //        driver.start().onTrue(Commands.runOnce(drivetrain::zeroFieldOrientationManual));
+        drivetrain.setDefaultCommand(drivetrain.teleopDriveCommand(driver.getHID(), () -> true));
+        driver.start().onTrue(Commands.runOnce(drivetrain::zeroFieldOrientationManual));
         driver.leftTrigger().whileTrue(intake.commandIntake());
         driver.rightTrigger().whileTrue(intake.commandToStow());
         driver.a().whileTrue(intake.commandZeroPivot());
+
+        copilot.start().onTrue(shooter.commandZeroPivot());
     }
 
     private void configureAutoRoutines() {

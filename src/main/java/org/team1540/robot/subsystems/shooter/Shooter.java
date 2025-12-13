@@ -192,7 +192,7 @@ public class Shooter extends SubsystemBase {
                     setFlywheelSpeeds(topSetpoint.getAsDouble(), bottomSetpoint.getAsDouble());
                     setPivotPosition(setpoint.get());
                 },
-                this::stopFlywheels);
+                this::stopFlywheels, this);
     }
 
     @AutoLogOutput(key = "Shooter/Pivot/PivotSetpoint")
@@ -201,7 +201,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public Command commandZeroPivot() {
-        return Commands.runOnce(() -> setPivotVolts(0.3 * 12))
+        return Commands.runOnce(() -> setPivotVolts(0.3 * 12), this)
                 .andThen(
                         Commands.waitSeconds(0.5),
                         Commands.waitUntil(() -> Math.abs(pivotInputs.currentStatorAmps) > HARD_STOP_CURRENT),
@@ -212,7 +212,7 @@ public class Shooter extends SubsystemBase {
     public Command tuningCommand() {
         LoggedTunableNumber topSpeedRPM = new LoggedTunableNumber("Shooter/Tuning/TopSpeedRPM", 5000);
         LoggedTunableNumber bottomSpeedRPM = new LoggedTunableNumber("Shooter/Tuning/BottomSpeedRPM", 5000);
-        LoggedTunableNumber pivotAngleDegrees = new LoggedTunableNumber("Shooter/Tuning/PivotAngleDegrees", 45);
+        LoggedTunableNumber pivotAngleDegrees = new LoggedTunableNumber("Shooter/Tuning/PivotAngleDegrees", 60);
         return spinUpAndSetPivotPosition(
                 topSpeedRPM, bottomSpeedRPM, () -> Rotation2d.fromDegrees(pivotAngleDegrees.getAsDouble()));
     }

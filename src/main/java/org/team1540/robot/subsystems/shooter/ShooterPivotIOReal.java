@@ -36,10 +36,11 @@ public class ShooterPivotIOReal implements ShooterPivotIO {
 
     public ShooterPivotIOReal() {
         TalonFXConfiguration motorConfig = new TalonFXConfiguration();
-        // todo : see if its inverted
         motorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
-        motorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-        // todo: see if its inverted
+        motorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+        motorConfig.Feedback.SensorToMechanismRatio = PIVOT_GEAR_RATIO;
+        motorConfig.Feedback.RotorToSensorRatio = 1.0;
 
         motorConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         motorConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = MAX_ANGLE_ROTS.getRotations();
@@ -63,8 +64,10 @@ public class ShooterPivotIOReal implements ShooterPivotIO {
         motorConfig.CurrentLimits.SupplyCurrentLowerTime = SUPPLY_CURRENT_LOWER_TIME;
         motorConfig.CurrentLimits.SupplyCurrentLowerLimit = SUPPLY_CURRENT_LOWER_LIMIT;
 
+        motor.getConfigurator().apply(motorConfig);
+
         BaseStatusSignal.setUpdateFrequencyForAll(
-                50, position, velocity, suppliedCurrent, appliedVoltage, temp, forwardLimit, reverseLimit);
+                50, position, velocity, suppliedCurrent, statorCurrent, appliedVoltage, temp, forwardLimit, reverseLimit);
 
         motor.optimizeBusUtilization();
     }
@@ -72,7 +75,7 @@ public class ShooterPivotIOReal implements ShooterPivotIO {
     @Override
     public void updateInputs(ShooterPivotIOInputs inputs) {
         BaseStatusSignal.refreshAll(
-                position, velocity, suppliedCurrent, appliedVoltage, temp, forwardLimit, reverseLimit);
+                position, velocity, suppliedCurrent, statorCurrent, appliedVoltage, temp, forwardLimit, reverseLimit);
         inputs.isAtForwardLimit = forwardLimit.getValue() == ForwardLimitValue.ClosedToGround;
         inputs.isAtReverseLimit = reverseLimit.getValue() == ReverseLimitValue.ClosedToGround;
         inputs.position = Rotation2d.fromRotations(position.getValueAsDouble());
